@@ -6,4 +6,5 @@ root: 00-syllabus
 chapters:
 - file: notes/01-intro-data-engineering
 - file: examples/ex-hospital-readmission
+- file: notes/02-exploratory-data-analysis
 - file: 99-references
