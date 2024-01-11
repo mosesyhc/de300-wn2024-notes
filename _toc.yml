@@ -7,4 +7,5 @@ chapters:
 - file: notes/01-intro-data-engineering
 - file: examples/ex-hospital-readmission
 - file: notes/02-exploratory-data-analysis
+- file: notes/03-missing-data
 - file: 99-references
