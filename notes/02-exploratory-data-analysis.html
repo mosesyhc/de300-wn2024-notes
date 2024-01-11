@@ -65,7 +65,7 @@ const thebe_selector_output = ".output, .cell_output"
     <script>DOCUMENTATION_OPTIONS.pagename = 'notes/02-exploratory-data-analysis';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="References" href="../99-references.html" />
+    <link rel="next" title="Handling missing data" href="03-missing-data.html" />
     <link rel="prev" title="(EX) Hospital readmission" href="../examples/ex-hospital-readmission.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -167,6 +167,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l1"><a class="reference internal" href="../examples/ex-hospital-readmission.html">(EX) Hospital readmission</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Exploratory Data Analysis</a></li>
 
+<li class="toctree-l1"><a class="reference internal" href="03-missing-data.html">Handling missing data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../99-references.html">References</a></li>
 </ul>
 
@@ -339,7 +340,7 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section class="tex2jax_ignore mathjax_ignore" id="exploratory-data-analysis">
-<h1>Exploratory Data Analysis<a class="headerlink" href="#exploratory-data-analysis" title="Permalink to this heading">#</a></h1>
+<span id="notes-eda"></span><h1>Exploratory Data Analysis<a class="headerlink" href="#exploratory-data-analysis" title="Permalink to this heading">#</a></h1>
 <p>Exploratory data analysis, or EDA, is a standard practice prior to any data manipulation and analysis.</p>
 <p>Recall that data engineering is primarily about data preparation to <em>serve</em> smooth and effective data analysis.  Exploratory data analysis generally refers to the step of understanding the data:</p>
 <ul class="simple">
@@ -385,6 +386,9 @@ document.write(`
 </div>
 </div>
 </div>
+<figure class="align-default">
+<img alt="../_images/sns.jpg" src="../_images/sns.jpg" />
+</figure>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># return all available datasets in seaborn</span>
@@ -902,6 +906,95 @@ memory usage: 3.0 MB
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">diam_num</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>carat</th>
+      <th>depth</th>
+      <th>table</th>
+      <th>price</th>
+      <th>x</th>
+      <th>y</th>
+      <th>z</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.23</td>
+      <td>61.5</td>
+      <td>55.0</td>
+      <td>326</td>
+      <td>3.95</td>
+      <td>3.98</td>
+      <td>2.43</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.21</td>
+      <td>59.8</td>
+      <td>61.0</td>
+      <td>326</td>
+      <td>3.89</td>
+      <td>3.84</td>
+      <td>2.31</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.23</td>
+      <td>56.9</td>
+      <td>65.0</td>
+      <td>327</td>
+      <td>4.05</td>
+      <td>4.07</td>
+      <td>2.31</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.29</td>
+      <td>62.4</td>
+      <td>58.0</td>
+      <td>334</td>
+      <td>4.20</td>
+      <td>4.23</td>
+      <td>2.63</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.31</td>
+      <td>63.3</td>
+      <td>58.0</td>
+      <td>335</td>
+      <td>4.34</td>
+      <td>4.35</td>
+      <td>2.75</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># for example, normality test</span>
 <span class="n">sps</span><span class="o">.</span><span class="n">normaltest</span><span class="p">(</span><span class="n">diam_num</span><span class="p">)</span>
 </pre></div>
@@ -1072,21 +1165,21 @@ memory usage: 3.0 MB
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Axes: ylabel=&#39;Frequency&#39;&gt;
 </pre></div>
 </div>
-<img alt="../_images/270e0a18107631035b5790422ea821f6bf3628879cb5f1b121a4823a8179d0a4.png" src="../_images/270e0a18107631035b5790422ea821f6bf3628879cb5f1b121a4823a8179d0a4.png" />
+<img alt="../_images/8594389d891fe0d6b87a4b28969a56c27b32c05d46ba6526f035560687557534.png" src="../_images/8594389d891fe0d6b87a4b28969a56c27b32c05d46ba6526f035560687557534.png" />
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># relative frequency? ...</span>
-<span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;price&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">diam</span><span class="p">)</span> <span class="c1">#, stat=&#39;probability&#39;)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s1">&#39;price&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">diam</span><span class="p">,</span> <span class="n">stat</span><span class="o">=</span><span class="s1">&#39;probability&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Axes: xlabel=&#39;price&#39;, ylabel=&#39;Count&#39;&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Axes: xlabel=&#39;price&#39;, ylabel=&#39;Probability&#39;&gt;
 </pre></div>
 </div>
-<img alt="../_images/c44efb2ac18ccb558f62841a8d79f92c77ef91ee8fdcb0308c6f9f8bb207b8df.png" src="../_images/c44efb2ac18ccb558f62841a8d79f92c77ef91ee8fdcb0308c6f9f8bb207b8df.png" />
+<img alt="../_images/6a0ff7a2cdce611fa6b007c0af03d511c4104019c9aa8052747216ada6da202e.png" src="../_images/6a0ff7a2cdce611fa6b007c0af03d511c4104019c9aa8052747216ada6da202e.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1098,10 +1191,10 @@ memory usage: 3.0 MB
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.FacetGrid at 0x2caf2456c10&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.FacetGrid at 0x12ddf0c5690&gt;
 </pre></div>
 </div>
-<img alt="../_images/f2b380957fe3ee48d9a5f0f789aabbcbb1b4fb8283c6726ff7d5a28221eebf85.png" src="../_images/f2b380957fe3ee48d9a5f0f789aabbcbb1b4fb8283c6726ff7d5a28221eebf85.png" />
+<img alt="../_images/6294f433d4ba02fced8349387ba5dfd3012d5a7c8434bdef7dc5b9156ba3005e.png" src="../_images/6294f433d4ba02fced8349387ba5dfd3012d5a7c8434bdef7dc5b9156ba3005e.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1117,10 +1210,10 @@ memory usage: 3.0 MB
   warnings.warn(warning)
 </pre></div>
 </div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.FacetGrid at 0x2caf2995110&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.FacetGrid at 0x12ddf10ce10&gt;
 </pre></div>
 </div>
-<img alt="../_images/4c5f2e313c9aedba9c1c62d0ba7beccccaf33e2770d329a3c0fbbab291db3759.png" src="../_images/4c5f2e313c9aedba9c1c62d0ba7beccccaf33e2770d329a3c0fbbab291db3759.png" />
+<img alt="../_images/40edcd7eec23294fccbeae046614bae072c816be56996689451372f7d8339076.png" src="../_images/40edcd7eec23294fccbeae046614bae072c816be56996689451372f7d8339076.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1134,7 +1227,7 @@ memory usage: 3.0 MB
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Axes: xlabel=&#39;cut&#39;, ylabel=&#39;count&#39;&gt;
 </pre></div>
 </div>
-<img alt="../_images/38c0b290b78c8ea58888d09d3deec845aa0c2052a97f5adda07a960677b776da.png" src="../_images/38c0b290b78c8ea58888d09d3deec845aa0c2052a97f5adda07a960677b776da.png" />
+<img alt="../_images/162c341eb6bc4e9a0cf0e5e68445a3cc7d03571a99ec43b9cff445ce3187f491.png" src="../_images/162c341eb6bc4e9a0cf0e5e68445a3cc7d03571a99ec43b9cff445ce3187f491.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1147,7 +1240,7 @@ memory usage: 3.0 MB
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Axes: xlabel=&#39;cut&#39;, ylabel=&#39;price&#39;&gt;
 </pre></div>
 </div>
-<img alt="../_images/b94291f710ddbbf0d8b09e9e850197bdd46276b2d60b3b2fbc71077cdfbf1a72.png" src="../_images/b94291f710ddbbf0d8b09e9e850197bdd46276b2d60b3b2fbc71077cdfbf1a72.png" />
+<img alt="../_images/bab3bedfa8ddba93c3b73c75b4a589daee2061dd8e2dee25e64cb5866990a301.png" src="../_images/bab3bedfa8ddba93c3b73c75b4a589daee2061dd8e2dee25e64cb5866990a301.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1158,10 +1251,10 @@ memory usage: 3.0 MB
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.JointGrid at 0x2caf2fa0c90&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.JointGrid at 0x12ddfdf1650&gt;
 </pre></div>
 </div>
-<img alt="../_images/d13ba761f5b1d21d2b4ca0049c706299349e6b5f78a2e97f0addab791ab65b96.png" src="../_images/d13ba761f5b1d21d2b4ca0049c706299349e6b5f78a2e97f0addab791ab65b96.png" />
+<img alt="../_images/329e9d2f7fa7293dc37c8227b39c69da63742b6f896fdc1da8972b08f96daaaa.png" src="../_images/329e9d2f7fa7293dc37c8227b39c69da63742b6f896fdc1da8972b08f96daaaa.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1172,7 +1265,7 @@ memory usage: 3.0 MB
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/8e4e0d8d945116d6344154522d7f3e214d39c0e9e44004ced16c31d83959399c.png" src="../_images/8e4e0d8d945116d6344154522d7f3e214d39c0e9e44004ced16c31d83959399c.png" />
+<img alt="../_images/eea65b38e476a8ce51e087ef88b67c4d60c7c1d163ff2d149ed2f290ac907d67.png" src="../_images/eea65b38e476a8ce51e087ef88b67c4d60c7c1d163ff2d149ed2f290ac907d67.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1183,7 +1276,7 @@ memory usage: 3.0 MB
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/879a513e6674ad98f2ed639de84a12cf5e162fae4ec8a695e99c396e541bd9ea.png" src="../_images/879a513e6674ad98f2ed639de84a12cf5e162fae4ec8a695e99c396e541bd9ea.png" />
+<img alt="../_images/61cca367e2f1972291ab5a2e3e7e9573d0903410ab8be94b90aa7f2ce8aeba3e.png" src="../_images/61cca367e2f1972291ab5a2e3e7e9573d0903410ab8be94b90aa7f2ce8aeba3e.png" />
 </div>
 </div>
 </section>
@@ -1193,7 +1286,7 @@ memory usage: 3.0 MB
 <p>We may dive into the penguins dataset as an exercise.</p>
 <p>Example questions:</p>
 <ul class="simple">
-<li><p>Some of the exploratory questions above</p></li>
+<li><p>Practice on some of the exploratory questions above</p></li>
 <li><p>How many penguins are in the dataset for each species?</p></li>
 <li><p>Do the penguin sizes differ by species, or where they live?</p></li>
 <li><p>If we were to build a statistical model for the “size” of penguins, how might we approach this?</p></li>
@@ -1227,6 +1320,8 @@ memory usage: 18.9+ KB
 <section id="in-case-you-need-this-jupyter-notebook-setup">
 <h2>(In case you need this) Jupyter notebook setup<a class="headerlink" href="#in-case-you-need-this-jupyter-notebook-setup" title="Permalink to this heading">#</a></h2>
 <p>Visit <a class="reference external" href="https://docs.jupyter.org/en/latest/install/notebook-classic.html">https://docs.jupyter.org/en/latest/install/notebook-classic.html</a> for some guidance to set up jupyter notebook.</p>
+<hr class="docutils" />
+<p><em>Note:</em> These notes are adapted from a blog post on <a class="reference external" href="https://tomaugspurger.net/posts/modern-6-visualization/">Tom’s Blog</a>.</p>
 </section>
 </section>
 
@@ -1270,11 +1365,11 @@ memory usage: 18.9+ KB
       </div>
     </a>
     <a class="right-next"
-       href="../99-references.html"
+       href="03-missing-data.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">References</p>
+        <p class="prev-next-title">Handling missing data</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
