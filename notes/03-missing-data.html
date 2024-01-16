@@ -67,7 +67,7 @@ const thebe_selector_output = ".output, .cell_output"
     <script>DOCUMENTATION_OPTIONS.pagename = 'notes/03-missing-data';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="References" href="../99-references.html" />
+    <link rel="next" title="(EX) Recommendation system with alternating least squares algorithm" href="../examples/ex-recommendations.html" />
     <link rel="prev" title="Exploratory Data Analysis" href="02-exploratory-data-analysis.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -165,11 +165,11 @@ const thebe_selector_output = ".output, .cell_output"
             </li>
         </ul>
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="01-intro-data-engineering.html">Introduction to Data Engineering</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../examples/ex-hospital-readmission.html">(EX) Hospital readmission</a></li>
 <li class="toctree-l1"><a class="reference internal" href="02-exploratory-data-analysis.html">Exploratory Data Analysis</a></li>
 
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Handling missing data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/ex-recommendations.html">(EX) Recommendation system with alternating least squares algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-outlier.html">Handling outliers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../99-references.html">References</a></li>
 </ul>
 
@@ -328,7 +328,10 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simple-imputation-within-a-time-series">Simple imputation within a time series</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multiple-imputation">Multiple imputation</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#k-nearest-neighbor"><span class="math notranslate nohighlight">\(k\)</span> Nearest Neighbor</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#matrix-completion">Matrix completion</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#matrix-completion">Matrix completion</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alternating-least-squares">Alternating Least Squares</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#some-useful-additional-resources">Some useful additional resources</a></li>
@@ -349,7 +352,7 @@ document.write(`
 <section id="classical-categories-of-missing-data">
 <h2>Classical categories of missing data<a class="headerlink" href="#classical-categories-of-missing-data" title="Permalink to this heading">#</a></h2>
 <p>If we know how the missing data are generated, so-called missing data mechanisms, we can take into account why data are missing in data analysis.</p>
-<p>A particularly useful (and wide-known) framework for missingness categorizes missingness into the following three categories <span id="id1">[<a class="reference internal" href="#id6" title="Roderick JA Little and Donald B Rubin. Statistical analysis with missing data. Volume 793. John Wiley &amp; Sons, 2019.">Little and Rubin, 2019</a>]</span>:</p>
+<p>A particularly useful (and wide-known) framework for missingness categorizes missingness into the following three categories <span id="id1">[<a class="reference internal" href="#id8" title="Roderick JA Little and Donald B Rubin. Statistical analysis with missing data. Volume 793. John Wiley &amp; Sons, 2019.">Little and Rubin, 2019</a>]</span>:</p>
 <p><strong>MCAR (missing completely at random):</strong> how data are missing is independent with any aspect of the data</p>
 <p><strong>MAR (missing at random):</strong> how data are missing depends on <strong>observed</strong> quantities, so-called <em>predictors, or independent variables</em></p>
 <ul class="simple">
@@ -383,9 +386,12 @@ document.write(`
 </ul>
 </li>
 </ul>
-<p>Example from <span id="id2">[<a class="reference internal" href="#id7" title="Rhian M Daniel, Michael G Kenward, Simon N Cousens, and Bianca L De Stavola. Using causal diagrams to guide analysis in missing data problems. Statistical methods in medical research, 21(3):243–256, 2012.">Daniel <em>et al.</em>, 2012</a>]</span>, reproducing Figure 4 in the paper:</p>
-<figure class="align-default">
-<img alt="../_images/mar-mnar.png" src="../_images/mar-mnar.png" />
+<p>Example from <span id="id2">[<a class="reference internal" href="#id9" title="Rhian M Daniel, Michael G Kenward, Simon N Cousens, and Bianca L De Stavola. Using causal diagrams to guide analysis in missing data problems. Statistical methods in medical research, 21(3):243–256, 2012.">Daniel <em>et al.</em>, 2012</a>]</span>, reproducing Figure 4 in the paper:</p>
+<figure class="align-default" id="mar-mnar">
+<a class="reference internal image-reference" href="../_images/mar-mnar.png"><img alt="../_images/mar-mnar.png" src="../_images/mar-mnar.png" style="width: 300px;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 2 </span><span class="caption-text">Effect of missingness mechanism on data analysis.</span><a class="headerlink" href="#mar-mnar" title="Permalink to this image">#</a></p>
+</figcaption>
 </figure>
 </section>
 <section id="imputation-methods">
@@ -395,6 +401,7 @@ document.write(`
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="n">pd</span><span class="o">.</span><span class="n">set_option</span><span class="p">(</span><span class="s1">&#39;display.precision&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 
 <span class="n">titanic</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="s1">&#39;titanic&#39;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">data_home</span><span class="o">=</span><span class="s1">&#39;dataset/&#39;</span><span class="p">)</span>
@@ -570,6 +577,37 @@ document.write(`
 <img alt="../_images/44266a4e9cf0bfedc175cd8a59334832bfa6a825b0193827b17ddd960f64ae71.png" src="../_images/44266a4e9cf0bfedc175cd8a59334832bfa6a825b0193827b17ddd960f64ae71.png" />
 </div>
 </div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># example with median, admitting only numeric columns</span>
+<span class="n">titanic_median</span> <span class="o">=</span> <span class="n">titanic</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">titanic_median</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">median_imputer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">titanic_median</span><span class="p">[[</span><span class="s1">&#39;age&#39;</span><span class="p">]])</span>
+<span class="c1"># another option</span>
+<span class="c1"># titanic_median[&#39;age&#39;] = titanic_median[&#39;age&#39;].fillna(titanic_median[&#39;age&#39;].median())</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">titanic_median</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">],</span> <span class="n">binwidth</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;imputed w/ median&#39;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">titanic</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">],</span> <span class="n">binwidth</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;purple&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;unimputed&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span> <span class="n">line</span> <span class="mi">3</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="c1"># example with median, admitting only numeric columns</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">titanic_median</span> <span class="o">=</span> <span class="n">titanic</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="ne">----&gt; </span><span class="mi">3</span> <span class="n">titanic_median</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">median_imputer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">titanic_median</span><span class="p">[[</span><span class="s1">&#39;age&#39;</span><span class="p">]])</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="c1"># another option</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="c1"># titanic_median[&#39;age&#39;] = titanic_median[&#39;age&#39;].fillna(titanic_median[&#39;age&#39;].median())</span>
+<span class="g g-Whitespace">      </span><span class="mi">7</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="ne">NameError</span>: name &#39;median_imputer&#39; is not defined
+</pre></div>
+</div>
+</div>
+</div>
 </section>
 <section id="simple-imputation-within-a-time-series">
 <h3>Simple imputation within a time series<a class="headerlink" href="#simple-imputation-within-a-time-series" title="Permalink to this heading">#</a></h3>
@@ -629,7 +667,7 @@ document.write(`
        Data Samples: 891
        Data Columns: 6
   Imputed Variables: 1
-save_all_iterations: False&gt;
+save_all_iterations: True&gt;
 </pre></div>
 </div>
 </div>
@@ -677,30 +715,49 @@ save_all_iterations: False&gt;
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.impute</span> <span class="kn">import</span> <span class="n">KNNImputer</span>
-<span class="n">titanic_knn</span> <span class="o">=</span> <span class="n">titanic</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">titanic_knn</span> <span class="o">=</span> <span class="n">titanic</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="s1">&#39;number&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
-<span class="n">knn_imputer</span> <span class="o">=</span> <span class="n">KNNImputer</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<span class="n">titanic_knn</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">knn_imputer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">titanic_knn</span><span class="p">[[</span><span class="s1">&#39;age&#39;</span><span class="p">]])</span>
+<span class="n">knn_imputer</span> <span class="o">=</span> <span class="n">KNNImputer</span><span class="p">(</span><span class="n">n_neighbors</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">titanic_knn_impute</span> <span class="o">=</span> <span class="n">knn_imputer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">titanic_knn</span><span class="p">)</span>
+<span class="n">titanic_knn_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">titanic_knn_impute</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">titanic_knn</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
 
-<span class="n">titanic_knn</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">hist</span><span class="p">()</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">titanic_knn_df</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">],</span> <span class="n">binwidth</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">stat</span><span class="o">=</span><span class="s1">&#39;probability&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;knn imputation&#39;</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">titanic</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">],</span> <span class="n">binwidth</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">stat</span><span class="o">=</span><span class="s1">&#39;probability&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;purple&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;unimputed&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Axes: ylabel=&#39;Frequency&#39;&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x1ce080d7010&gt;
 </pre></div>
 </div>
-<img alt="../_images/4c887967c92c81a4adedafbb800ee34be59950d018db41f7c195d2bcefb08a55.png" src="../_images/4c887967c92c81a4adedafbb800ee34be59950d018db41f7c195d2bcefb08a55.png" />
+<img alt="../_images/b685a4c8cd4158b97c2f416e9e26085b810f0c26fd1371d97d1a4a9200bc3f57.png" src="../_images/b685a4c8cd4158b97c2f416e9e26085b810f0c26fd1371d97d1a4a9200bc3f57.png" />
 </div>
 </div>
 </section>
 <section id="matrix-completion">
 <h3>Matrix completion<a class="headerlink" href="#matrix-completion" title="Permalink to this heading">#</a></h3>
-<p>Matrix completion typically assumes some low-rank structure within the dataset.  Examples of usage:</p>
+<p>Matrix completion typically assumes some low-rank structure within the dataset.</p>
+<p>Examples of usage:</p>
 <ul class="simple">
-<li><p>recommendation system</p></li>
+<li><p>recommendation system, <em>see</em> <a class="reference internal" href="../examples/ex-recommendations.html#ex-rec-system"><span class="std std-ref">(EX) Recommendation system with alternating least squares algorithm</span></a>.</p></li>
 <li><p>image restoration</p></li>
 </ul>
+<section id="alternating-least-squares">
+<h4>Alternating Least Squares<a class="headerlink" href="#alternating-least-squares" title="Permalink to this heading">#</a></h4>
+<p>One particular algorithm that has garnered considerable interest is the Alternating Least Squares algorithm <span id="id3">[<a class="reference internal" href="#id10" title="Trevor Hastie, Rahul Mazumder, Jason D Lee, and Reza Zadeh. Matrix completion and low-rank svd via fast alternating least squares. The Journal of Machine Learning Research, 16(1):3367–3402, 2015.">Hastie <em>et al.</em>, 2015</a>]</span>.</p>
+<p>Suppose we have a matrix <span class="math notranslate nohighlight">\(R \in \mathbb{R}^{n\times p}\)</span> that contains user ratings for items.  The matrix completion or factorziation problem typically solves for some matrices <span class="math notranslate nohighlight">\(X \in \mathbb{R}^{k\times n}, Y \in \mathbb{R}^{k\times p}\)</span> such that <span class="math notranslate nohighlight">\(R \approx X^\mathsf{T} Y\)</span>, through the optimization problem</p>
+<div class="math notranslate nohighlight">
+\[ \min_{X, Y} \ell(X, Y) := \underbrace{\frac{1}{2} \|P_\Omega(R - X^\mathsf{T} Y\|^2_F}_\text{recovery} + \underbrace{\frac{\lambda}{2} (\|X\|^2_F + \|Y\|^2_F)}_\text{regularization}, \]</div>
+<p>where <span class="math notranslate nohighlight">\(P_\Omega\)</span> is a projection that fills in (or discards) missing locations.</p>
+<p><strong>Observation</strong>:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\ell(X, Y)\)</span> is non-convex.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\ell(X, Y)\)</span> is bi-convex, meaning that fixing either <span class="math notranslate nohighlight">\(X\)</span>, or <span class="math notranslate nohighlight">\(Y\)</span> leads to a convex function.</p></li>
+</ul>
+<p>The bi-convexity leads to an alternating algorithm (for a full <span class="math notranslate nohighlight">\(R\)</span>).  But the missing locations do introduce nuances to the algorithm.  See details in Theorem 3.1 of <span id="id4">Hastie <em>et al.</em> [<a class="reference internal" href="#id10" title="Trevor Hastie, Rahul Mazumder, Jason D Lee, and Reza Zadeh. Matrix completion and low-rank svd via fast alternating least squares. The Journal of Machine Learning Research, 16(1):3367–3402, 2015.">2015</a>]</span>.</p>
+</section>
 </section>
 </section>
 <section id="some-useful-additional-resources">
@@ -709,12 +766,15 @@ save_all_iterations: False&gt;
 <li><p><a class="reference external" href="https://gking.harvard.edu/files/evil.pdf">Gary King: Analyzing Incomplete Political Science Data</a></p></li>
 <li><p>Zangerle, E., &amp; Bauer, C. (2022). Evaluating recommender systems: survey and framework. ACM Computing Surveys, 55(8), 1-38.</p></li>
 </ul>
-<div class="docutils container" id="id3">
+<div class="docutils container" id="id5">
 <dl class="citation">
-<dt class="label" id="id7"><span class="brackets"><a class="fn-backref" href="#id2">DKCDS12</a></span></dt>
+<dt class="label" id="id9"><span class="brackets"><a class="fn-backref" href="#id2">DKCDS12</a></span></dt>
 <dd><p>Rhian M Daniel, Michael G Kenward, Simon N Cousens, and Bianca L De Stavola. Using causal diagrams to guide analysis in missing data problems. <em>Statistical methods in medical research</em>, 21(3):243–256, 2012.</p>
 </dd>
-<dt class="label" id="id6"><span class="brackets"><a class="fn-backref" href="#id1">LR19</a></span></dt>
+<dt class="label" id="id10"><span class="brackets">HMLZ15</span><span class="fn-backref">(<a href="#id3">1</a>,<a href="#id4">2</a>)</span></dt>
+<dd><p>Trevor Hastie, Rahul Mazumder, Jason D Lee, and Reza Zadeh. Matrix completion and low-rank svd via fast alternating least squares. <em>The Journal of Machine Learning Research</em>, 16(1):3367–3402, 2015.</p>
+</dd>
+<dt class="label" id="id8"><span class="brackets"><a class="fn-backref" href="#id1">LR19</a></span></dt>
 <dd><p>Roderick JA Little and Donald B Rubin. <em>Statistical analysis with missing data</em>. Volume 793. John Wiley &amp; Sons, 2019.</p>
 </dd>
 </dl>
@@ -762,11 +822,11 @@ save_all_iterations: False&gt;
       </div>
     </a>
     <a class="right-next"
-       href="../99-references.html"
+       href="../examples/ex-recommendations.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">References</p>
+        <p class="prev-next-title">(EX) Recommendation system with alternating least squares algorithm</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -794,7 +854,10 @@ save_all_iterations: False&gt;
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#simple-imputation-within-a-time-series">Simple imputation within a time series</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multiple-imputation">Multiple imputation</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#k-nearest-neighbor"><span class="math notranslate nohighlight">\(k\)</span> Nearest Neighbor</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#matrix-completion">Matrix completion</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#matrix-completion">Matrix completion</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#alternating-least-squares">Alternating Least Squares</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#some-useful-additional-resources">Some useful additional resources</a></li>

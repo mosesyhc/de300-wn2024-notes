@@ -66,7 +66,7 @@ const thebe_selector_output = ".output, .cell_output"
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Handling missing data" href="03-missing-data.html" />
-    <link rel="prev" title="(EX) Hospital readmission" href="../examples/ex-hospital-readmission.html" />
+    <link rel="prev" title="DATA_ENG 300: Data Engineering Studio" href="../00-syllabus.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -163,11 +163,11 @@ const thebe_selector_output = ".output, .cell_output"
             </li>
         </ul>
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="01-intro-data-engineering.html">Introduction to Data Engineering</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../examples/ex-hospital-readmission.html">(EX) Hospital readmission</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Exploratory Data Analysis</a></li>
 
 <li class="toctree-l1"><a class="reference internal" href="03-missing-data.html">Handling missing data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/ex-recommendations.html">(EX) Recommendation system with alternating least squares algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-outlier.html">Handling outliers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../99-references.html">References</a></li>
 </ul>
 
@@ -386,8 +386,11 @@ document.write(`
 </div>
 </div>
 </div>
-<figure class="align-default">
-<img alt="../_images/sns.jpg" src="../_images/sns.jpg" />
+<figure class="align-default" id="sns">
+<a class="reference internal image-reference" href="../_images/sns.jpg"><img alt="../_images/sns.jpg" src="../_images/sns.jpg" style="width: 50%;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 1 </span><span class="caption-text">The origin of sns.</span><a class="headerlink" href="#sns" title="Permalink to this image">#</a></p>
+</figcaption>
 </figure>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1165,7 +1168,7 @@ memory usage: 3.0 MB
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Axes: ylabel=&#39;Frequency&#39;&gt;
 </pre></div>
 </div>
-<img alt="../_images/8594389d891fe0d6b87a4b28969a56c27b32c05d46ba6526f035560687557534.png" src="../_images/8594389d891fe0d6b87a4b28969a56c27b32c05d46ba6526f035560687557534.png" />
+<img alt="../_images/6d7cc7d2d0fa9e08b4643d791c4a4bede6f09e4b931a4a83bfe140eea6c7ac17.png" src="../_images/6d7cc7d2d0fa9e08b4643d791c4a4bede6f09e4b931a4a83bfe140eea6c7ac17.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1179,7 +1182,7 @@ memory usage: 3.0 MB
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Axes: xlabel=&#39;price&#39;, ylabel=&#39;Probability&#39;&gt;
 </pre></div>
 </div>
-<img alt="../_images/6a0ff7a2cdce611fa6b007c0af03d511c4104019c9aa8052747216ada6da202e.png" src="../_images/6a0ff7a2cdce611fa6b007c0af03d511c4104019c9aa8052747216ada6da202e.png" />
+<img alt="../_images/6eee9ec1271723e949e1acbaad6ab2f0109cca6c538f2f95d2c2f72c292fbf7b.png" src="../_images/6eee9ec1271723e949e1acbaad6ab2f0109cca6c538f2f95d2c2f72c292fbf7b.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1191,10 +1194,10 @@ memory usage: 3.0 MB
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.FacetGrid at 0x12ddf0c5690&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.FacetGrid at 0x1e834243050&gt;
 </pre></div>
 </div>
-<img alt="../_images/6294f433d4ba02fced8349387ba5dfd3012d5a7c8434bdef7dc5b9156ba3005e.png" src="../_images/6294f433d4ba02fced8349387ba5dfd3012d5a7c8434bdef7dc5b9156ba3005e.png" />
+<img alt="../_images/49f3b4a8703e3eaaf445c6c737f5f2311a1ae08cfacdce8e1769fe19d1d0f0d5.png" src="../_images/49f3b4a8703e3eaaf445c6c737f5f2311a1ae08cfacdce8e1769fe19d1d0f0d5.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1210,10 +1213,10 @@ memory usage: 3.0 MB
   warnings.warn(warning)
 </pre></div>
 </div>
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.FacetGrid at 0x12ddf10ce10&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.FacetGrid at 0x1e834826d90&gt;
 </pre></div>
 </div>
-<img alt="../_images/40edcd7eec23294fccbeae046614bae072c816be56996689451372f7d8339076.png" src="../_images/40edcd7eec23294fccbeae046614bae072c816be56996689451372f7d8339076.png" />
+<img alt="../_images/8b76199b590eea0daf0d9f90597f4e71974bd25dad6ad7cadb54f623692891c6.png" src="../_images/8b76199b590eea0daf0d9f90597f4e71974bd25dad6ad7cadb54f623692891c6.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1227,7 +1230,7 @@ memory usage: 3.0 MB
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Axes: xlabel=&#39;cut&#39;, ylabel=&#39;count&#39;&gt;
 </pre></div>
 </div>
-<img alt="../_images/162c341eb6bc4e9a0cf0e5e68445a3cc7d03571a99ec43b9cff445ce3187f491.png" src="../_images/162c341eb6bc4e9a0cf0e5e68445a3cc7d03571a99ec43b9cff445ce3187f491.png" />
+<img alt="../_images/9336e2be3f6d52621bda21c5218be78b4f8fe6ef8c40315984f001db701ed03f.png" src="../_images/9336e2be3f6d52621bda21c5218be78b4f8fe6ef8c40315984f001db701ed03f.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1240,7 +1243,7 @@ memory usage: 3.0 MB
 <div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Axes: xlabel=&#39;cut&#39;, ylabel=&#39;price&#39;&gt;
 </pre></div>
 </div>
-<img alt="../_images/bab3bedfa8ddba93c3b73c75b4a589daee2061dd8e2dee25e64cb5866990a301.png" src="../_images/bab3bedfa8ddba93c3b73c75b4a589daee2061dd8e2dee25e64cb5866990a301.png" />
+<img alt="../_images/9c1a457dc70bafbcd65f1961417a3e4f0490090ae37364f15b1e333390a81f3c.png" src="../_images/9c1a457dc70bafbcd65f1961417a3e4f0490090ae37364f15b1e333390a81f3c.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1251,10 +1254,10 @@ memory usage: 3.0 MB
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.JointGrid at 0x12ddfdf1650&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;seaborn.axisgrid.JointGrid at 0x1e83501bd50&gt;
 </pre></div>
 </div>
-<img alt="../_images/329e9d2f7fa7293dc37c8227b39c69da63742b6f896fdc1da8972b08f96daaaa.png" src="../_images/329e9d2f7fa7293dc37c8227b39c69da63742b6f896fdc1da8972b08f96daaaa.png" />
+<img alt="../_images/39bf9cfc69b3e19fb7881ab4eeed797ad7759b4d1ac8fec22d8eee41bd51946c.png" src="../_images/39bf9cfc69b3e19fb7881ab4eeed797ad7759b4d1ac8fec22d8eee41bd51946c.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1265,7 +1268,7 @@ memory usage: 3.0 MB
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/eea65b38e476a8ce51e087ef88b67c4d60c7c1d163ff2d149ed2f290ac907d67.png" src="../_images/eea65b38e476a8ce51e087ef88b67c4d60c7c1d163ff2d149ed2f290ac907d67.png" />
+<img alt="../_images/f4cc7057ee75801594aa8593a34ac035f92a8caa0ecc553bfed19fcc6af54a7e.png" src="../_images/f4cc7057ee75801594aa8593a34ac035f92a8caa0ecc553bfed19fcc6af54a7e.png" />
 </div>
 </div>
 <div class="cell docutils container">
@@ -1276,7 +1279,7 @@ memory usage: 3.0 MB
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/61cca367e2f1972291ab5a2e3e7e9573d0903410ab8be94b90aa7f2ce8aeba3e.png" src="../_images/61cca367e2f1972291ab5a2e3e7e9573d0903410ab8be94b90aa7f2ce8aeba3e.png" />
+<img alt="../_images/b667be3f5ce3d31e1619a835110a49eb18094d1705455818f3d0c08146c68fba.png" src="../_images/b667be3f5ce3d31e1619a835110a49eb18094d1705455818f3d0c08146c68fba.png" />
 </div>
 </div>
 </section>
@@ -1356,12 +1359,12 @@ memory usage: 18.9+ KB
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../examples/ex-hospital-readmission.html"
+       href="../00-syllabus.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">(EX) Hospital readmission</p>
+        <p class="prev-next-title">DATA_ENG 300: Data Engineering Studio</p>
       </div>
     </a>
     <a class="right-next"

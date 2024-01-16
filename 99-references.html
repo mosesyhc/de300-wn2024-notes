@@ -65,7 +65,7 @@ const thebe_selector_output = ".output, .cell_output"
     <script>DOCUMENTATION_OPTIONS.pagename = '99-references';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Handling missing data" href="notes/03-missing-data.html" />
+    <link rel="prev" title="Handling outliers" href="notes/04-outlier.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -162,11 +162,11 @@ const thebe_selector_output = ".output, .cell_output"
             </li>
         </ul>
         <ul class="current nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="notes/01-intro-data-engineering.html">Introduction to Data Engineering</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/ex-hospital-readmission.html">(EX) Hospital readmission</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notes/02-exploratory-data-analysis.html">Exploratory Data Analysis</a></li>
 
 <li class="toctree-l1"><a class="reference internal" href="notes/03-missing-data.html">Handling missing data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples/ex-recommendations.html">(EX) Recommendation system with alternating least squares algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notes/04-outlier.html">Handling outliers</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">References</a></li>
 </ul>
 
@@ -322,17 +322,20 @@ document.write(`
 <h1>References<a class="headerlink" href="#references" title="Permalink to this heading">#</a></h1>
 <div class="docutils container" id="id1">
 <dl class="citation">
-<dt class="label" id="id3"><span class="brackets">CMHH16</span></dt>
-<dd><p>Moses YH Chan, Shair A Malik, Brian R Hallstrom, and Richard E Hughes. Factors affecting readmission cost after primary total knee arthroplasty in michigan. <em>The Journal of Arthroplasty</em>, 31(6):1179–1182, 2016.</p>
-</dd>
 <dt class="label" id="id5"><span class="brackets">DKCDS12</span></dt>
 <dd><p>Rhian M Daniel, Michael G Kenward, Simon N Cousens, and Bianca L De Stavola. Using causal diagrams to guide analysis in missing data problems. <em>Statistical methods in medical research</em>, 21(3):243–256, 2012.</p>
 </dd>
+<dt class="label" id="id7"><span class="brackets">HHH+22</span></dt>
+<dd><p>Songqiao Han, Xiyang Hu, Hailiang Huang, Minqi Jiang, and Yue Zhao. ADBench: anomaly detection benchmark. <em>Advances in Neural Information Processing Systems</em>, 35:32142–32159, 2022.</p>
+</dd>
+<dt class="label" id="id6"><span class="brackets">HMLZ15</span></dt>
+<dd><p>Trevor Hastie, Rahul Mazumder, Jason D Lee, and Reza Zadeh. Matrix completion and low-rank svd via fast alternating least squares. <em>The Journal of Machine Learning Research</em>, 16(1):3367–3402, 2015.</p>
+</dd>
+<dt class="label" id="id8"><span class="brackets">LSF+21</span></dt>
+<dd><p>Meng-Chieh Lee, Shubhranshu Shekhar, Christos Faloutsos, T Noah Hutson, and Leon Iasemidis. Gen 2 out: detecting and ranking generalized anomalies. In <em>2021 IEEE International Conference on Big Data (Big Data)</em>, 801–811. IEEE, 2021.</p>
+</dd>
 <dt class="label" id="id4"><span class="brackets">LR19</span></dt>
 <dd><p>Roderick JA Little and Donald B Rubin. <em>Statistical analysis with missing data</em>. Volume 793. John Wiley &amp; Sons, 2019.</p>
-</dd>
-<dt class="label" id="id2"><span class="brackets">RH22</span></dt>
-<dd><p>Joe Reis and Matt Housley. <em>Fundamentals of Data Engineering</em>. O'Reilly Media, Inc., 2022.</p>
 </dd>
 </dl>
 </div>
@@ -369,12 +372,12 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="notes/03-missing-data.html"
+       href="notes/04-outlier.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Handling missing data</p>
+        <p class="prev-next-title">Handling outliers</p>
       </div>
     </a>
 </div>

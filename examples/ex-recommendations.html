@@ -1,0 +1,1293 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>(EX) Recommendation system with alternating least squares algorithm &#8212; DATA_ENG 300 Data Engineering Studio</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script type="application/vnd.jupyter.widget-state+json">{"state": {"8dae1b4f98df41598eecb3fcfa3aa2d9": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "5cba823f43bf4e81b7cbea00e85e7137": {"model_name": "ProgressStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "ProgressStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "StyleView", "bar_color": null, "description_width": ""}}, "296e8e6db4f3430a8cb6847253bc59db": {"model_name": "FloatProgressModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "FloatProgressModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "ProgressView", "bar_style": "success", "description": "", "description_allow_html": false, "layout": "IPY_MODEL_8dae1b4f98df41598eecb3fcfa3aa2d9", "max": 50.0, "min": 0.0, "orientation": "horizontal", "style": "IPY_MODEL_5cba823f43bf4e81b7cbea00e85e7137", "tabbable": null, "tooltip": null, "value": 50.0}}, "141a3ef8290c4a978e3435454427ec8b": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "1e5c8529e23447ffbd84b96c8a15fbb8": {"model_name": "HTMLStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "StyleView", "background": null, "description_width": "", "font_size": null, "text_color": null}}, "3c38b524b68a4e669b13658312f29885": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "HTMLView", "description": "", "description_allow_html": false, "layout": "IPY_MODEL_141a3ef8290c4a978e3435454427ec8b", "placeholder": "\u200b", "style": "IPY_MODEL_1e5c8529e23447ffbd84b96c8a15fbb8", "tabbable": null, "tooltip": null, "value": "100%"}}, "47d9511007b149038e9aaf8689636118": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "2fc2c70e847d48a287bc13b96a503a75": {"model_name": "HTMLStyleModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLStyleModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "StyleView", "background": null, "description_width": "", "font_size": null, "text_color": null}}, "1cebf031f07f4eb7aa401fec819b76ac": {"model_name": "HTMLModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HTMLModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "HTMLView", "description": "", "description_allow_html": false, "layout": "IPY_MODEL_47d9511007b149038e9aaf8689636118", "placeholder": "\u200b", "style": "IPY_MODEL_2fc2c70e847d48a287bc13b96a503a75", "tabbable": null, "tooltip": null, "value": " 50/50 [00:23&lt;00:00,  1.91it/s]"}}, "4c934b1fd5414bc3bbdd2985f24026e9": {"model_name": "LayoutModel", "model_module": "@jupyter-widgets/base", "model_module_version": "2.0.0", "state": {"_model_module": "@jupyter-widgets/base", "_model_module_version": "2.0.0", "_model_name": "LayoutModel", "_view_count": null, "_view_module": "@jupyter-widgets/base", "_view_module_version": "2.0.0", "_view_name": "LayoutView", "align_content": null, "align_items": null, "align_self": null, "border_bottom": null, "border_left": null, "border_right": null, "border_top": null, "bottom": null, "display": null, "flex": null, "flex_flow": null, "grid_area": null, "grid_auto_columns": null, "grid_auto_flow": null, "grid_auto_rows": null, "grid_column": null, "grid_gap": null, "grid_row": null, "grid_template_areas": null, "grid_template_columns": null, "grid_template_rows": null, "height": null, "justify_content": null, "justify_items": null, "left": null, "margin": null, "max_height": null, "max_width": null, "min_height": null, "min_width": null, "object_fit": null, "object_position": null, "order": null, "overflow": null, "padding": null, "right": null, "top": null, "visibility": null, "width": null}}, "5135481def1d4aa1aaf80c8d90af55f8": {"model_name": "HBoxModel", "model_module": "@jupyter-widgets/controls", "model_module_version": "2.0.0", "state": {"_dom_classes": [], "_model_module": "@jupyter-widgets/controls", "_model_module_version": "2.0.0", "_model_name": "HBoxModel", "_view_count": null, "_view_module": "@jupyter-widgets/controls", "_view_module_version": "2.0.0", "_view_name": "HBoxView", "box_style": "", "children": ["IPY_MODEL_3c38b524b68a4e669b13658312f29885", "IPY_MODEL_296e8e6db4f3430a8cb6847253bc59db", "IPY_MODEL_1cebf031f07f4eb7aa401fec819b76ac"], "layout": "IPY_MODEL_4c934b1fd5414bc3bbdd2985f24026e9", "tabbable": null, "tooltip": null}}}, "version_major": 2, "version_minor": 0}</script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script crossorigin="anonymous" data-jupyter-widgets-cdn="https://cdn.jsdelivr.net/npm/" src="https://cdn.jsdelivr.net/npm/@jupyter-widgets/html-manager@1.0.6/dist/embed-amd.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/ex-recommendations';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Handling outliers" href="../notes/04-outlier.html" />
+    <link rel="prev" title="Handling missing data" href="../notes/03-missing-data.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../00-syllabus.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">DATA_ENG 300 Data Engineering Studio</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../00-syllabus.html">
+                    DATA_ENG 300: Data Engineering Studio
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../notes/02-exploratory-data-analysis.html">Exploratory Data Analysis</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../notes/03-missing-data.html">Handling missing data</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">(EX) Recommendation system with alternating least squares algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notes/04-outlier.html">Handling outliers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../99-references.html">References</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/examples/ex-recommendations.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>(EX) Recommendation system with alternating least squares algorithm</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="ex-recommendation-system-with-alternating-least-squares-algorithm">
+<span id="ex-rec-system"></span><h1>(EX) Recommendation system with alternating least squares algorithm<a class="headerlink" href="#ex-recommendation-system-with-alternating-least-squares-algorithm" title="Permalink to this heading">#</a></h1>
+<p>This document demonstrates how to use the Alternating Least Squares algorithm in designing a recommendation system.</p>
+<p><em>Notebook adapted from</em> <a class="reference external" href="https://gist.github.com/jbochi/2e8ddcc5939e70e5368326aa034a144e">https://gist.github.com/jbochi/2e8ddcc5939e70e5368326aa034a144e</a></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># !pip install implicit </span>
+<span class="c1"># !pip install pandas-gbq</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">curdir</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>C:\Users\moses\Desktop\git\de300-wi2024\de300-wn2024-notes\examples
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">google.oauth2</span> <span class="kn">import</span> <span class="n">service_account</span>
+
+<span class="n">credentials</span> <span class="o">=</span> <span class="n">service_account</span><span class="o">.</span><span class="n">Credentials</span><span class="o">.</span><span class="n">from_service_account_file</span><span class="p">(</span>
+    <span class="s1">&#39;../../misc/de300-rec-system-72c831ee85c4.json&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.sparse</span> <span class="kn">import</span> <span class="n">coo_matrix</span>
+<span class="kn">from</span> <span class="nn">implicit.als</span> <span class="kn">import</span> <span class="n">AlternatingLeastSquares</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">project_id</span> <span class="o">=</span> <span class="s2">&quot;de300-rec-system&quot;</span>
+<span class="n">github_user</span> <span class="o">=</span> <span class="s2">&quot;mosesyhc&quot;</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;../../misc/de300-github-api-token.txt&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">github_token</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># from https://github.com/settings/tokens</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">github_auth</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">HTTPBasicAuth</span><span class="p">(</span><span class="n">github_user</span><span class="p">,</span> <span class="n">github_token</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">WITH stars AS (</span>
+<span class="s2">     SELECT actor.login AS user, repo.name AS repo, created_at AS timestamp</span>
+<span class="s2">     FROM githubarchive.month.202312</span>
+<span class="s2">     WHERE type=&quot;WatchEvent&quot;</span>
+<span class="s2">),</span>
+<span class="s2">repositories_stars AS (</span>
+<span class="s2">     SELECT repo, COUNT(*) as c</span>
+<span class="s2">     FROM stars</span>
+<span class="s2">     GROUP BY repo</span>
+<span class="s2">     ORDER BY c DESC</span>
+<span class="s2">     LIMIT 1000</span>
+<span class="s2">),</span>
+<span class="s2">users_stars AS (</span>
+<span class="s2">    SELECT user, COUNT(*) as c</span>
+<span class="s2">    FROM  stars</span>
+<span class="s2">    WHERE repo IN (SELECT repo FROM repositories_stars)</span>
+<span class="s2">    GROUP BY user</span>
+<span class="s2">    HAVING c &gt; 10 AND C &lt; 100</span>
+<span class="s2">    LIMIT 10000</span>
+<span class="s2">)</span>
+<span class="s2">SELECT</span>
+<span class="s2">user, repo, timestamp</span>
+<span class="s2">FROM stars</span>
+<span class="s2">WHERE repo IN (SELECT repo FROM repositories_stars)</span>
+<span class="s2">AND user IN (SELECT user FROM users_stars)</span>
+<span class="s2">ORDER BY timestamp DESC</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">gbq</span><span class="o">.</span><span class="n">read_gbq</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="s2">&quot;timestamp&quot;</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="s2">&quot;standard&quot;</span><span class="p">,</span> <span class="n">project_id</span><span class="o">=</span><span class="n">project_id</span><span class="p">,</span> <span class="n">credentials</span><span class="o">=</span><span class="n">credentials</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>user</th>
+      <th>repo</th>
+    </tr>
+    <tr>
+      <th>timestamp</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>2023-12-31 23:59:40+00:00</th>
+      <td>halbtuerke</td>
+      <td>apple/ml-ferret</td>
+    </tr>
+    <tr>
+      <th>2023-12-31 23:58:39+00:00</th>
+      <td>nv0skar</td>
+      <td>anasfik/flutter-spy</td>
+    </tr>
+    <tr>
+      <th>2023-12-31 23:57:56+00:00</th>
+      <td>RhetTbull</td>
+      <td>ofek/pyapp</td>
+    </tr>
+    <tr>
+      <th>2023-12-31 23:57:28+00:00</th>
+      <td>alpapaydin</td>
+      <td>hiyouga/LLaMA-Factory</td>
+    </tr>
+    <tr>
+      <th>2023-12-31 23:55:12+00:00</th>
+      <td>mikestaub</td>
+      <td>blakeblackshear/frigate</td>
+    </tr>
+  </tbody>
+</table>
+</div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([&#39;halbtuerke&#39;, &#39;nv0skar&#39;, &#39;RhetTbull&#39;, ..., &#39;youngabrahamamur&#39;,
+       &#39;chopec79&#39;, &#39;MO-W59&#39;], dtype=object)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="o">.</span><span class="n">repo</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>array([&#39;apple/ml-ferret&#39;, &#39;anasfik/flutter-spy&#39;, &#39;ofek/pyapp&#39;,
+       &#39;hiyouga/LLaMA-Factory&#39;, &#39;blakeblackshear/frigate&#39;,
+       &#39;flowdriveai/flowpilot&#39;, &#39;KRTirtho/spotube&#39;, &#39;NVIDIA/TensorRT-LLM&#39;,
+       &#39;joaomdmoura/crewAI&#39;, &#39;movie-web/movie-web&#39;,
+       &#39;guoqincode/AnimateAnyone-unofficial&#39;,
+       &#39;paperless-ngx/paperless-ngx&#39;, &#39;jasonjmcghee/rem&#39;,
+       &#39;nextauthjs/next-auth&#39;, &#39;Hack-with-Github/Awesome-Hacking&#39;,
+       &#39;janhq/jan&#39;, &#39;loco-rs/loco&#39;, &#39;radishes-music/radishes&#39;,
+       &#39;Unstructured-IO/unstructured&#39;, &#39;udecode/plate&#39;,
+       &#39;successfulstudy/promptoftheyear&#39;, &#39;open-mmlab/Amphion&#39;,
+       &#39;penxio/penx&#39;, &#39;mlabonne/llm-course&#39;,
+       &#39;donnemartin/system-design-primer&#39;, &#39;suno-ai/bark&#39;,
+       &#39;Dao-AILab/flash-attention&#39;, &#39;tldraw/tldraw&#39;, &#39;THUDM/CogVLM&#39;,
+       &#39;hunar4321/particle-life&#39;, &#39;heyman/heynote&#39;,
+       &#39;LeCoupa/awesome-cheatsheets&#39;,
+       &#39;trimstray/the-book-of-secret-knowledge&#39;, &#39;sharkdp/fd&#39;,
+       &#39;jxnl/instructor&#39;, &#39;qdrant/qdrant&#39;, &#39;gethomepage/homepage&#39;,
+       &#39;slint-ui/slint&#39;, &#39;raysan5/raylib&#39;, &#39;twentyhq/twenty&#39;,
+       &#39;babysor/MockingBird&#39;, &#39;Genymobile/scrcpy&#39;, &#39;alacritty/alacritty&#39;,
+       &#39;biomejs/biome&#39;, &#39;huggingface/transformers&#39;, &#39;elie222/inbox-zero&#39;,
+       &#39;abetlen/llama-cpp-python&#39;, &#39;commaai/openpilot&#39;, &#39;strapi/strapi&#39;,
+       &#39;codecrafters-io/build-your-own-x&#39;, &#39;streetwriters/notesnook&#39;,
+       &#39;dreamoving/dreamoving-project&#39;, &#39;fujiapple852/trippy&#39;,
+       &#39;vinta/awesome-python&#39;, &#39;iluwatar/java-design-patterns&#39;,
+       &#39;jesseduffield/lazydocker&#39;, &#39;pydantic/FastUI&#39;, &#39;Bin-Huang/chatbox&#39;,
+       &#39;NationalSecurityAgency/ghidra&#39;, &#39;atomicals/atomicals-js&#39;,
+       &#39;freeCodeCamp/freeCodeCamp&#39;, &#39;jaywcjlove/awesome-mac&#39;,
+       &#39;papers-we-love/papers-we-love&#39;, &#39;bionic-gpt/bionic-gpt&#39;,
+       &#39;521xueweihan/HelloGitHub&#39;, &#39;microsoft/Data-Science-For-Beginners&#39;,
+       &#39;avelino/awesome-go&#39;, &#39;awesome-selfhosted/awesome-selfhosted&#39;,
+       &#39;microsoft/generative-ai-for-beginners&#39;, &#39;sindresorhus/awesome&#39;,
+       &#39;obsproject/obs-studio&#39;, &#39;jmorganca/ollama&#39;,
+       &#39;chatanywhere/GPT_API_free&#39;, &#39;vllm-project/vllm&#39;, &#39;vitejs/vite&#39;,
+       &#39;Mozilla-Ocho/llamafile&#39;, &#39;SYSTRAN/faster-whisper&#39;,
+       &#39;mnotgod96/AppAgent&#39;, &#39;gregberge/twc&#39;, &#39;microsoft/promptbench&#39;,
+       &#39;bitcoin/bitcoin&#39;, &#39;linexjlin/GPTs&#39;, &#39;Mintplex-Labs/anything-llm&#39;,
+       &#39;laurent22/joplin&#39;, &#39;ryanoasis/nerd-fonts&#39;, &#39;dubinc/dub&#39;,
+       &#39;home-assistant/core&#39;, &#39;louislam/uptime-kuma&#39;,
+       &#39;Yanyutin753/PandoraNext-TokensTool&#39;, &#39;KwaiKEG/KwaiAgents&#39;,
+       &#39;cumulo-autumn/StreamDiffusion&#39;, &#39;pi-hole/pi-hole&#39;,
+       &#39;songquanpeng/one-api&#39;, &#39;francoismichel/ssh3&#39;,
+       &#39;pytorch-labs/gpt-fast&#39;, &#39;llmware-ai/llmware&#39;,
+       &#39;GoogleCloudPlatform/generative-ai&#39;, &#39;ollama-webui/ollama-webui&#39;,
+       &#39;Flipper-XFW/Xtreme-Firmware&#39;,
+       &#39;NginxProxyManager/nginx-proxy-manager&#39;, &#39;langchain-ai/langchain&#39;,
+       &#39;lencx/ChatGPT&#39;, &#39;postgresml/postgresml&#39;,
+       &#39;triggerdotdev/trigger.dev&#39;, &#39;prisma/prisma&#39;,
+       &#39;jianchang512/clone-voice&#39;, &#39;open-mmlab/PIA&#39;,
+       &#39;Pythagora-io/gpt-pilot&#39;, &#39;openai/triton&#39;, &#39;danswer-ai/danswer&#39;,
+       &#39;kamranahmedse/developer-roadmap&#39;, &#39;AmruthPillai/Reactive-Resume&#39;,
+       &#39;shadcn-ui/ui&#39;, &#39;langgenius/dify&#39;,
+       &#39;flipperdevices/flipperzero-firmware&#39;,
+       &#39;blackmatrix7/ios_rule_script&#39;, &#39;s0md3v/roop&#39;, &#39;jellyfin/jellyfin&#39;,
+       &#39;facebook/docusaurus&#39;, &#39;ggerganov/llama.cpp&#39;,
+       &#39;abi/screenshot-to-code&#39;, &#39;kgrzybek/modular-monolith-with-ddd&#39;,
+       &#39;saadeghi/daisyui&#39;, &#39;goabstract/Awesome-Design-Tools&#39;,
+       &#39;yangshun/tech-interview-handbook&#39;, &#39;PaddlePaddle/PaddleOCR&#39;,
+       &#39;jordan-cutler/path-to-senior-engineer-handbook&#39;,
+       &#39;danny-avila/LibreChat&#39;, &#39;lllyasviel/Fooocus&#39;,
+       &#39;facebookresearch/llama-recipes&#39;, &#39;Hillobar/Rope&#39;,
+       &#39;aymenfurter/microagents&#39;, &#39;docusealco/docuseal&#39;, &#39;calcom/cal.com&#39;,
+       &#39;penpot/penpot&#39;, &#39;odoo/odoo&#39;, &#39;activepieces/activepieces&#39;,
+       &#39;pocketbase/pocketbase&#39;, &#39;luosiallen/latent-consistency-model&#39;,
+       &#39;state-spaces/mamba&#39;, &#39;chroma-core/chroma&#39;, &#39;reworkd/AgentGPT&#39;,
+       &#39;jart/cosmopolitan&#39;, &#39;srush/GPU-Puzzles&#39;,
+       &#39;ChatGPTNextWeb/ChatGPT-Next-Web&#39;, &#39;flet-dev/flet&#39;,
+       &#39;rust-unofficial/awesome-rust&#39;, &#39;gkd-kit/gkd&#39;,
+       &#39;Stability-AI/stablediffusion&#39;, &#39;ansible/ansible&#39;,
+       &#39;warpdotdev/Warp&#39;, &#39;Awesome-Windows/Awesome&#39;, &#39;neovim/neovim&#39;,
+       &#39;karpathy/llama2.c&#39;, &#39;docker/awesome-compose&#39;,
+       &#39;UberGuidoZ/Flipper&#39;, &#39;DovAmir/awesome-design-patterns&#39;,
+       &#39;dkhamsing/open-source-ios-apps&#39;,
+       &#39;serhii-londar/open-source-mac-os-apps&#39;, &#39;ventoy/Ventoy&#39;,
+       &#39;brillout/awesome-react-components&#39;,
+       &#39;tiimgreen/github-cheat-sheet&#39;, &#39;Solido/awesome-flutter&#39;,
+       &#39;binhnguyennus/awesome-scalability&#39;, &#39;prakhar1989/awesome-courses&#39;,
+       &#39;fffaraz/awesome-cpp&#39;, &#39;sindresorhus/awesome-nodejs&#39;,
+       &#39;enaqx/awesome-react&#39;, &#39;MunGell/awesome-for-beginners&#39;,
+       &#39;prometheus/prometheus&#39;, &#39;DopplerHQ/awesome-interview-questions&#39;,
+       &#39;apache/superset&#39;, &#39;tesseract-ocr/tesseract&#39;, &#39;OpenBMB/XAgent&#39;,
+       &#39;geekan/MetaGPT&#39;, &#39;yuliskov/SmartTube&#39;, &#39;SoftFever/OrcaSlicer&#39;,
+       &#39;babaohuang/GeminiProChat&#39;, &#39;anoma/namada&#39;,
+       &#39;DarkFlippers/unleashed-firmware&#39;, &#39;nvim-lua/kickstart.nvim&#39;,
+       &#39;openchatai/OpenCopilot&#39;, &#39;rclone/rclone&#39;,
+       &#39;justjavac/free-programming-books-zh_CN&#39;,
+       &#39;spyboy-productions/CloakQuest3r&#39;, &#39;rough-stuff/rough-notation&#39;,
+       &#39;HumanAIGC/OutfitAnyone&#39;, &#39;starship/starship&#39;, &#39;aidenybai/million&#39;,
+       &#39;pastelsky/tsdocs&#39;, &#39;ise-uiuc/magicoder&#39;, &#39;TheAlgorithms/Python&#39;,
+       &#39;trekhleb/javascript-algorithms&#39;, &#39;spla-tam/SplaTAM&#39;,
+       &#39;cg123/mergekit&#39;, &#39;3b1b/manim&#39;,
+       &#39;microsoft/Mastering-GitHub-Copilot-for-Paired-Programming&#39;,
+       &#39;microsoft/ML-For-Beginners&#39;, &#39;hua1995116/indiehackers-steps&#39;,
+       &#39;microsoft/AI-For-Beginners&#39;, &#39;avgupta456/github-trends&#39;,
+       &#39;pjlab-sys4nlp/llama-moe&#39;, &#39;assafelovic/gpt-researcher&#39;,
+       &#39;Stability-AI/generative-models&#39;, &#39;mermaid-js/mermaid&#39;,
+       &#39;rust-lang/rust&#39;, &#39;microsoft/DeepSpeed&#39;, &#39;Anuken/Mindustry&#39;,
+       &#39;massgravel/Microsoft-Activation-Scripts&#39;, &#39;mudler/LocalAI&#39;,
+       &#39;NvChad/NvChad&#39;, &#39;OpenAccess-AI-Collective/axolotl&#39;,
+       &#39;BurntSushi/ripgrep&#39;, &#39;emilkowalski/sonner&#39;, &#39;workos/authkit&#39;,
+       &#39;helix-editor/helix&#39;, &#39;tteck/Proxmox&#39;,
+       &#39;gpt-engineer-org/gpt-engineer&#39;, &#39;mckaywrigley/chatbot-ui&#39;,
+       &#39;ml-explore/mlx&#39;, &#39;ruanyf/weekly&#39;, &#39;charmbracelet/bubbletea&#39;,
+       &#39;ekzhang/sshx&#39;, &#39;fatedier/frp&#39;, &#39;jdx/rtx&#39;, &#39;Nutlope/roomGPT&#39;,
+       &#39;jesseduffield/lazygit&#39;, &#39;cpacker/MemGPT&#39;, &#39;excalidraw/excalidraw&#39;,
+       &#39;sczhou/CodeFormer&#39;,
+       &#39;RVC-Project/Retrieval-based-Voice-Conversion-WebUI&#39;,
+       &#39;microsoft/Web-Dev-For-Beginners&#39;, &#39;OwO-Network/DeepLX&#39;,
+       &#39;pathwaycom/pathway&#39;, &#39;cubiq/ComfyUI_IPAdapter_plus&#39;,
+       &#39;codex-team/editor.js&#39;, &#39;type-challenges/type-challenges&#39;,
+       &#39;nestjs/nest&#39;, &#39;conductor-oss/conductor&#39;,
+       &#39;goldbergyoni/nodebestpractices&#39;,
+       &#39;Chalarangelo/30-seconds-of-code&#39;,
+       &#39;ryanmcdermott/clean-code-javascript&#39;, &#39;openai/openai-python&#39;,
+       &#39;be5invis/Iosevka&#39;, &#39;tiangolo/fastapi&#39;, &#39;public-apis/public-apis&#39;,
+       &#39;GitHubDaily/GitHubDaily&#39;, &#39;VikParuchuri/marker&#39;,
+       &#39;labring/FastGPT&#39;, &#39;gohugoio/hugo&#39;, &#39;ripienaar/free-for-dev&#39;,
+       &#39;bradtraversy/design-resources-for-developers&#39;,
+       &#39;EbookFoundation/free-programming-books&#39;, &#39;imartinez/privateGPT&#39;,
+       &#39;mrdoob/three.js&#39;, &#39;huggingface/peft&#39;,
+       &#39;threestudio-project/threestudio&#39;, &#39;Loyalsoldier/clash-rules&#39;,
+       &#39;sudheerj/reactjs-interview-questions&#39;, &#39;gedoor/legado&#39;,
+       &#39;BartoszJarocki/cv&#39;, &#39;lobehub/lobe-chat&#39;,
+       &#39;practical-tutorials/project-based-learning&#39;, &#39;haotian-liu/LLaVA&#39;,
+       &#39;netbootxyz/netboot.xyz&#39;, &#39;pydantic/pydantic&#39;,
+       &#39;liguodongiot/llm-action&#39;, &#39;wasp-lang/wasp&#39;, &#39;wasp-lang/open-saas&#39;,
+       &#39;coder/code-server&#39;, &#39;chaseSpace/k8s-tutorial-cn&#39;,
+       &#39;chat2db/Chat2DB&#39;, &#39;sharkdp/bat&#39;,
+       &#39;WuKongOpenSource/Wukong_Accounting&#39;, &#39;ltdrdata/ComfyUI-Manager&#39;,
+       &#39;CyC2018/CS-Notes&#39;, &#39;marticliment/WingetUI&#39;, &#39;bentoml/OpenLLM&#39;,
+       &#39;adobe/react-spectrum&#39;, &#39;openpilot-hub/devpilot-intellij&#39;,
+       &#39;hyprwm/Hyprland&#39;, &#39;WuKongOpenSource/Wukong_HRM&#39;,
+       &#39;hiroi-sora/Umi-OCR&#39;, &#39;xinntao/Real-ESRGAN&#39;, &#39;tw93/Pake&#39;,
+       &#39;jason5ng32/MyIP&#39;, &#39;nektos/act&#39;, &#39;OpenBMB/ChatDev&#39;,
+       &#39;Significant-Gravitas/AutoGPT&#39;, &#39;tachiyomiorg/tachiyomi&#39;,
+       &#39;go-gost/gost&#39;, &#39;usebruno/bruno&#39;, &#39;makeplane/plane&#39;,
+       &#39;Snoopy1866/LiTiaotiao-Custom-Rules&#39;, &#39;StanGirard/quivr&#39;,
+       &#39;nuxt/nuxt&#39;, &#39;binary-husky/gpt_academic&#39;, &#39;jgraph/drawio-desktop&#39;,
+       &#39;syncthing/syncthing&#39;, &#39;refinedev/refine&#39;, &#39;dai-shi/waku&#39;,
+       &#39;oobabooga/text-generation-webui&#39;,
+       &#39;AUTOMATIC1111/stable-diffusion-webui&#39;, &#39;AdguardTeam/AdGuardHome&#39;,
+       &#39;ml-explore/mlx-examples&#39;, &#39;XTLS/Xray-core&#39;, &#39;SagerNet/sing-box&#39;,
+       &#39;illacloud/illa-builder&#39;, &#39;h2oai/h2ogpt&#39;, &#39;LazyVim/LazyVim&#39;,
+       &#39;roboflow/supervision&#39;, &#39;yt-dlp/yt-dlp&#39;, &#39;yangxy/PASD&#39;,
+       &#39;labmlai/annotated_deep_learning_paper_implementations&#39;,
+       &#39;lxfater/inpaint-web&#39;, &#39;f/awesome-chatgpt-prompts&#39;,
+       &#39;chatchat-space/Langchain-Chatchat&#39;, &#39;alibaba-damo-academy/FunASR&#39;,
+       &#39;gradio-app/gradio&#39;, &#39;surrealdb/surrealdb&#39;, &#39;mpv-player/mpv&#39;,
+       &#39;mattermost/focalboard&#39;, &#39;leiurayer/downkyi&#39;, &#39;immich-app/immich&#39;,
+       &#39;comfyanonymous/ComfyUI&#39;, &#39;JushBJJ/Mr.-Ranedeer-AI-Tutor&#39;,
+       &#39;duckdb/duckdb&#39;, &#39;openai-translator/openai-translator&#39;,
+       &#39;coqui-ai/TTS&#39;, &#39;nvm-sh/nvm&#39;, &#39;marktext/marktext&#39;,
+       &#39;opentofu/opentofu&#39;, &#39;vanjs-org/van&#39;, &#39;IceWhaleTech/CasaOS&#39;,
+       &#39;florestefano1975/comfyui-portrait-master&#39;,
+       &#39;SqueezeAILab/LLMCompiler&#39;, &#39;zhayujie/chatgpt-on-wechat&#39;,
+       &#39;upscayl/upscayl&#39;, &#39;jackhawks/rectg&#39;,
+       &#39;svc-develop-team/so-vits-svc&#39;, &#39;photoprism/photoprism&#39;,
+       &#39;expo/expo&#39;, &#39;LC044/WeChatMsg&#39;, &#39;Kong/insomnia&#39;,
+       &#39;KillianLucas/open-interpreter&#39;, &#39;SJTU-IPADS/PowerInfer&#39;,
+       &#39;pot-app/pot-desktop&#39;, &#39;pandora-next/deploy&#39;,
+       &#39;FlagAlpha/Llama2-Chinese&#39;, &#39;milvus-io/milvus&#39;,
+       &#39;kuchin/awesome-cto&#39;, &#39;lukas-blecher/LaTeX-OCR&#39;, &#39;kska32/ebooks&#39;,
+       &#39;lllyasviel/ControlNet&#39;, &#39;huggingface/candle&#39;,
+       &#39;ymcui/Chinese-LLaMA-Alpaca&#39;, &#39;Librum-Reader/Librum&#39;,
+       &#39;facebookresearch/seamless_communication&#39;, &#39;ezshine/AwesomeSites&#39;,
+       &#39;BuilderIO/gpt-crawler&#39;, &#39;Z4nzu/hackingtool&#39;,
+       &#39;deepset-ai/haystack&#39;, &#39;openai/whisper&#39;, &#39;facundoolano/feedi&#39;,
+       &#39;HumanAIGC/AnimateAnyone&#39;, &#39;nocodb/nocodb&#39;,
+       &#39;Acly/krita-ai-diffusion&#39;, &#39;Avaiga/taipy&#39;, &#39;mli/paper-reading&#39;,
+       &#39;OthersideAI/self-operating-computer&#39;, &#39;chriskiehl/Gooey&#39;,
+       &#39;aiboboxx/clashfree&#39;, &#39;DropbaseHQ/dropbase&#39;, &#39;ocornut/imgui&#39;,
+       &#39;freefq/free&#39;, &#39;tmux/tmux&#39;, &#39;hiddify/hiddify-next&#39;,
+       &#39;ggerganov/whisper.cpp&#39;, &#39;nomic-ai/gpt4all&#39;,
+       &#39;WZMIAOMIAO/deep-learning-for-image-processing&#39;,
+       &#39;Anduin2017/HowToCook&#39;, &#39;explodinggradients/ragas&#39;,
+       &#39;dani-garcia/vaultwarden&#39;, &#39;webstudio-is/webstudio&#39;,
+       &#39;CorentinTh/it-tools&#39;, &#39;minio/minio&#39;, &#39;v2fly/v2ray-core&#39;,
+       &#39;wenge-research/YAYI2&#39;, &#39;Asabeneh/30-Days-Of-Python&#39;,
+       &#39;gin-gonic/gin&#39;, &#39;logseq/logseq&#39;, &#39;vbenjs/vue-vben-admin&#39;,
+       &#39;TabbyML/tabby&#39;, &#39;zellij-org/zellij&#39;, &#39;AppFlowy-IO/AppFlowy&#39;,
+       &#39;xpipe-io/xpipe&#39;, &#39;LizardByte/Sunshine&#39;, &#39;oven-sh/bun&#39;,
+       &#39;lss233/chatgpt-mirai-qq-bot&#39;, &#39;mengzehe/TVBox&#39;, &#39;hrvach/deskhop&#39;,
+       &#39;THUDM/ChatGLM3&#39;, &#39;infiniflow/infinity&#39;, &#39;yuzu-emu/yuzu&#39;,
+       &#39;flutter/flutter&#39;, &#39;termux/termux-app&#39;, &#39;wez/wezterm&#39;,
+       &#39;deepinsight/insightface&#39;, &#39;2hacc/TVBox&#39;, &#39;zadam/trilium&#39;,
+       &#39;JoeanAmier/TikTokDownloader&#39;, &#39;rcmaehl/MSEdgeRedirect&#39;,
+       &#39;bytebase/bytebase&#39;, &#39;pola-rs/polars&#39;, &#39;PromtEngineer/localGPT&#39;,
+       &#39;zulip/zulip&#39;, &#39;lyswhut/lx-music-desktop&#39;, &#39;iptv-org/iptv&#39;,
+       &#39;microsoft/playwright&#39;, &#39;OpenTalker/video-retalking&#39;,
+       &#39;supabase/supabase&#39;, &#39;mui/material-ui&#39;, &#39;microsoft/TypeScript&#39;,
+       &#39;nodejs/node&#39;, &#39;d2l-ai/d2l-en&#39;, &#39;electron/electron&#39;,
+       &#39;airbnb/javascript&#39;, &#39;getify/You-Dont-Know-JS&#39;, &#39;vuejs/vue&#39;,
+       &#39;facebook/react&#39;, &#39;CorentinJ/Real-Time-Voice-Cloning&#39;,
+       &#39;xtekky/gpt4free&#39;, &#39;d2l-ai/d2l-zh&#39;, &#39;scikit-learn/scikit-learn&#39;,
+       &#39;pytorch/pytorch&#39;, &#39;skylot/jadx&#39;, &#39;topjohnwu/Magisk&#39;,
+       &#39;elastic/elasticsearch&#39;, &#39;tiangolo/sqlmodel&#39;,
+       &#39;vernesong/OpenClash&#39;, &#39;federico-busato/Modern-CPP-Programming&#39;,
+       &#39;THUDM/CodeGeeX2&#39;, &#39;weaigc/bingo&#39;, &#39;Chanzhaoyu/chatgpt-web&#39;,
+       &#39;SeleniumHQ/selenium&#39;, &#39;fanmingming/live&#39;,
+       &#39;e2b-dev/awesome-ai-agents&#39;, &#39;dataease/dataease&#39;,
+       &#39;MetaCubeX/mihomo&#39;, &#39;1Panel-dev/1Panel&#39;,
+       &#39;huiyadanli/RevokeMsgPatcher&#39;, &#39;fighting41love/funNLP&#39;,
+       &#39;youngyangyang04/leetcode-master&#39;, &#39;microsoft/terminal&#39;,
+       &#39;basecamp/solid_queue&#39;, &#39;withastro/astro&#39;,
+       &#39;PKUanonym/REKCARC-TSC-UHT&#39;, &#39;tencent-ailab/IP-Adapter&#39;,
+       &#39;sunface/rust-course&#39;, &#39;josephmisiti/awesome-machine-learning&#39;,
+       &#39;wailsapp/wails&#39;, &#39;MatsuriDayo/NekoBoxForAndroid&#39;,
+       &#39;agalwood/Motrix&#39;, &#39;tauri-apps/tauri&#39;, &#39;oxc-project/oxc&#39;,
+       &#39;microsoft/promptbase&#39;, &#39;labuladong/fucking-algorithm&#39;,
+       &#39;maypok86/otter&#39;, &#39;ashishps1/awesome-system-design-resources&#39;,
+       &#39;jianchang512/pyvideotrans&#39;, &#39;ReVanced/revanced-manager&#39;,
+       &#39;Atlas-OS/Atlas&#39;, &#39;sveltejs/svelte&#39;,
+       &#39;KurtBestor/Hitomi-Downloader&#39;, &#39;modularml/mojo&#39;,
+       &#39;folke/lazy.nvim&#39;, &#39;spacedriveapp/spacedrive&#39;,
+       &#39;FuelLabs/fuel-core&#39;, &#39;doocs/leetcode&#39;, &#39;FuelLabs/sway&#39;,
+       &#39;microsoft/autogen&#39;, &#39;golang-standards/project-layout&#39;,
+       &#39;hellzerg/optimizer&#39;, &#39;ClickHouse/ClickHouse&#39;, &#39;lapce/lapce&#39;,
+       &#39;w-okada/voice-changer&#39;, &#39;karanpratapsingh/system-design&#39;,
+       &#39;Sangwan5688/BlackHole&#39;, &#39;facebookresearch/llama&#39;,
+       &#39;run-llama/llama_index&#39;, &#39;lyogavin/Anima&#39;, &#39;itgoyo/TelegramGroup&#39;,
+       &#39;anuraghazra/github-readme-stats&#39;,
+       &#39;Vaibhavs10/insanely-fast-whisper&#39;, &#39;PostHog/posthog&#39;,
+       &#39;n8n-io/n8n&#39;, &#39;BradyFU/Awesome-Multimodal-Large-Language-Models&#39;,
+       &#39;microsoft/semantic-kernel&#39;, &#39;bannedbook/fanqiang&#39;,
+       &#39;microsoft/PowerToys&#39;, &#39;godotengine/godot&#39;,
+       &#39;imDazui/Tvlist-awesome-m3u-m3u8&#39;, &#39;sczhou/Upscale-A-Video&#39;,
+       &#39;ultralytics/yolov5&#39;, &#39;Hannibal046/Awesome-LLM&#39;, &#39;opencv/opencv&#39;,
+       &#39;PanJiaChen/vue-element-admin&#39;, &#39;bensadeh/tailspin&#39;,
+       &#39;zclzone/vue-naive-admin&#39;, &#39;anfragment/zen&#39;, &#39;jqnatividad/qsv&#39;,
+       &#39;louislam/dockge&#39;, &#39;hoppscotch/hoppscotch&#39;,
+       &#39;kubernetes/kubernetes&#39;, &#39;lyswhut/lx-music-mobile&#39;,
+       &#39;productiveops/dokemon&#39;, &#39;matt8707/ha-fusion&#39;, &#39;llvm/llvm-project&#39;,
+       &#39;BerriAI/litellm&#39;, &#39;localsend/localsend&#39;, &#39;a-h/templ&#39;,
+       &#39;facebook/react-native&#39;, &#39;drizzle-team/drizzle-orm&#39;,
+       &#39;netdata/netdata&#39;, &#39;ziglang/zig&#39;, &#39;spring-projects/spring-boot&#39;,
+       &#39;remotion-dev/github-unwrapped-2023&#39;, &#39;iusztinpaul/hands-on-llms&#39;,
+       &#39;golang/go&#39;, &#39;karpathy/nanoGPT&#39;, &#39;stas00/ml-engineering&#39;,
+       &#39;PlexPt/awesome-chatgpt-prompts-zh&#39;, &#39;logspace-ai/langflow&#39;,
+       &#39;jaywcjlove/linux-command&#39;, &#39;YunaiV/ruoyi-vue-pro&#39;,
+       &#39;krahets/LeetCode-Book&#39;, &#39;myshell-ai/OpenVoice&#39;,
+       &#39;files-community/Files&#39;, &#39;lm-sys/FastChat&#39;,
+       &#39;ByteByteGoHq/system-design-101&#39;, &#39;233boy/v2ray&#39;, &#39;trpc/trpc&#39;,
+       &#39;forthespada/CS-Books&#39;, &#39;byoungd/English-level-up-tips&#39;,
+       &#39;githubnext/monaspace&#39;, &#39;Ucas-HaoranWei/Vary&#39;, &#39;debauchee/barrier&#39;,
+       &#39;wgh136/PicaComic&#39;, &#39;xuchengsheng/spring-reading&#39;,
+       &#39;chai-research/chaiverse&#39;, &#39;standard-webhooks/standard-webhooks&#39;,
+       &#39;xaoyaoo/PyWxDump&#39;, &#39;facebookresearch/segment-anything&#39;,
+       &#39;YSGStudyHards/DotNetGuide&#39;, &#39;m-bain/whisperX&#39;, &#39;nushell/nushell&#39;,
+       &#39;SpotX-Official/SpotX&#39;, &#39;JoeanAmier/XHS-Downloader&#39;,
+       &#39;hashicorp/terraform&#39;, &#39;Yuliang-Liu/Monkey&#39;,
+       &#39;fishaudio/Bert-VITS2&#39;, &#39;CircleRadon/Osprey&#39;, &#39;usememos/memos&#39;,
+       &#39;elfvingralf/macOSpilot-ai-assistant&#39;, &#39;axios/axios&#39;,
+       &#39;appwrite/appwrite&#39;, &#39;THUDM/ChatGLM2-6B&#39;, &#39;elysiajs/elysia&#39;,
+       &#39;jackfrued/Python-100-Days&#39;, &#39;florinpop17/app-ideas&#39;,
+       &#39;tayllan/awesome-algorithms&#39;, &#39;baaivision/Emu&#39;,
+       &#39;cloudcommunity/Free-Certifications&#39;, &#39;netease-youdao/EmotiVoice&#39;,
+       &#39;liuchong/awesome-roadmaps&#39;, &#39;SPLWare/esProc&#39;, &#39;google/jax&#39;,
+       &#39;PKUFlyingPig/cs-self-learning&#39;,
+       &#39;ZHO-ZHO-ZHO/comfyui-portrait-master-zh-cn&#39;, &#39;ks233/ja-learner&#39;,
+       &#39;leptos-rs/leptos&#39;,
+       &#39;sdmg15/Best-websites-a-programmer-should-visit&#39;,
+       &#39;FlowiseAI/Flowise&#39;, &#39;jmpoep/vmprotect-3.5.1&#39;,
+       &#39;krishnaik06/Roadmap-To-Learn-Generative-AI-In-2024&#39;,
+       &#39;shidahuilang/shuyuan&#39;, &#39;openai/CLIP&#39;, &#39;angular/angular&#39;,
+       &#39;imoneoi/openchat&#39;, &#39;SillyTavern/SillyTavern&#39;, &#39;rustdesk/rustdesk&#39;,
+       &#39;clash-verge-rev/clash-verge-rev&#39;,
+       &#39;jwasham/coding-interview-university&#39;, &#39;alist-org/alist&#39;,
+       &#39;tonsky/FiraCode&#39;, &#39;django/django&#39;, &#39;HerbertHe/iptv-sources&#39;,
+       &#39;miru-project/miru-app&#39;, &#39;magic-research/magic-animate&#39;,
+       &#39;mayuki/Cocona&#39;, &#39;Coder-World04/Complete-System-Design&#39;,
+       &#39;Eugeny/tabby&#39;, &#39;MHSanaei/3x-ui&#39;, &#39;omnivore-app/omnivore&#39;,
+       &#39;iamadamdev/bypass-paywalls-chrome&#39;, &#39;Wilfred/difftastic&#39;,
+       &#39;immersive-translate/immersive-translate&#39;,
+       &#39;openobserve/openobserve&#39;, &#39;ultralytics/ultralytics&#39;,
+       &#39;Sanster/lama-cleaner&#39;, &#39;Light-City/CPlusPlusThings&#39;,
+       &#39;bregman-arie/devops-exercises&#39;,
+       &#39;Z-Siqi/Clash-for-Windows_Chinese&#39;, &#39;2dust/v2rayN&#39;,
+       &#39;rust-lang/rustlings&#39;, &#39;manticoresoftware/manticoresearch&#39;,
+       &#39;TanStack/query&#39;, &#39;huggingface/diffusers&#39;, &#39;pmndrs/zustand&#39;,
+       &#39;chinesehuazhou/python-whydo&#39;, &#39;2dust/v2rayNG&#39;,
+       &#39;zbezj/HEU_KMS_Activator&#39;, &#39;zhongyang219/TrafficMonitor&#39;,
+       &#39;Pawdroid/Free-servers&#39;, &#39;pppscn/SmsForwarder&#39;, &#39;go-gitea/gitea&#39;,
+       &#39;MustardChef/WSABuilds&#39;, &#39;SawyerHood/draw-a-ui&#39;,
+       &#39;open-compass/MixtralKit&#39;, &#39;GaiZhenbiao/ChuanhuChatGPT&#39;,
+       &#39;RealKai42/qwerty-learner&#39;, &#39;siyuan-note/siyuan&#39;,
+       &#39;EmergeTools/Pow&#39;, &#39;SuperDuperDB/superduperdb&#39;,
+       &#39;gaotianliuyun/gao&#39;, &#39;o0HalfLife0o/TVBoxOSC&#39;,
+       &#39;ossu/computer-science&#39;, &#39;valinet/ExplorerPatcher&#39;,
+       &#39;wavetermdev/waveterm&#39;, &#39;ohmyzsh/ohmyzsh&#39;, &#39;twbs/bootstrap&#39;,
+       &#39;bbycroft/llm-viz&#39;, &#39;krahets/hello-algo&#39;, &#39;AleoHQ/leo&#39;,
+       &#39;CompVis/stable-diffusion&#39;, &#39;swaggyP36000/TrollStore-IPAs&#39;,
+       &#39;GrowingGit/GitHub-Chinese-Top-Charts&#39;,
+       &#39;jackfrued/Python-Core-50-Courses&#39;, &#39;facebookresearch/Pearl&#39;,
+       &#39;mistralai/megablocks-public&#39;, &#39;stanford-futuredata/megablocks&#39;,
+       &#39;idurar/idurar-erp-crm&#39;, &#39;DIYgod/RSSHub&#39;, &#39;ant-design/ant-design&#39;,
+       &#39;resemble-ai/resemble-enhance&#39;, &#39;kingToolbox/WindTerm&#39;,
+       &#39;mistralai/mistral-src&#39;, &#39;tensorflow/tensorflow&#39;,
+       &#39;TencentARC/MotionCtrl&#39;, &#39;uber-go/nilaway&#39;,
+       &#39;firstcontributions/first-contributions&#39;, &#39;kaixindelele/ChatPaper&#39;,
+       &#39;appsmithorg/appsmith&#39;, &#39;Anttwo/SuGaR&#39;, &#39;streamlit/streamlit&#39;,
+       &#39;ggerganov/ggml&#39;, &#39;gorhill/uBlock&#39;,
+       &#39;luciddreamer-cvlab/LucidDreamer&#39;, &#39;bgstaal/multipleWindow3dScene&#39;,
+       &#39;astral-sh/ruff&#39;, &#39;karpathy/minGPT&#39;, &#39;python/cpython&#39;,
+       &#39;StarRocks/starrocks&#39;, &#39;Anjok07/ultimatevocalremovergui&#39;,
+       &#39;samber/lo&#39;, &#39;typst/typst&#39;, &#39;easychen/lean-side-bussiness&#39;,
+       &#39;openai/openai-cookbook&#39;, &#39;XIU2/TrackersListCollection&#39;,
+       &#39;leonlucc/awesome-alternative&#39;, &#39;huggingface/pytorch-image-models&#39;,
+       &#39;ChrisTitusTech/winutil&#39;, &#39;netero1010/EDRSilencer&#39;, &#39;xx025/carrot&#39;,
+       &#39;SecureAI-Tools/SecureAI-Tools&#39;, &#39;tokio-rs/axum&#39;,
+       &#39;mifi/lossless-cut&#39;, &#39;payloadcms/payload&#39;,
+       &#39;swisskyrepo/PayloadsAllTheThings&#39;, &#39;nightcca/CC-NIGHT&#39;,
+       &#39;gkd-kit/subscription&#39;, &#39;scalar/scalar&#39;,
+       &#39;Flode-Labs/vid2densepose&#39;,
+       &#39;sudheerj/javascript-interview-questions&#39;,
+       &#39;filebrowser/filebrowser&#39;, &#39;facebookresearch/faiss&#39;,
+       &#39;WerWolv/ImHex&#39;, &#39;chinesehuazhou/python-weekly&#39;,
+       &#39;opa334/TrollStore&#39;, &#39;FFmpeg/FFmpeg&#39;, &#39;openai/weak-to-strong&#39;,
+       &#39;kuafuai/DevOpsGPT&#39;, &#39;wilsonfreitas/awesome-quant&#39;,
+       &#39;ytdl-org/youtube-dl&#39;, &#39;base-org/chains&#39;, &#39;base-org/node&#39;,
+       &#39;tailwindlabs/tailwindcss&#39;, &#39;typehero/typehero&#39;,
+       &#39;facefusion/facefusion&#39;, &#39;eza-community/eza&#39;, &#39;tinygrad/tinygrad&#39;,
+       &#39;exelban/stats&#39;, &#39;zzzgydi/clash-verge&#39;,
+       &#39;MetaCubeX/ClashMetaForAndroid&#39;, &#39;coder2gwy/coder2gwy&#39;,
+       &#39;outlines-dev/outlines&#39;, &#39;BeyondDimension/SteamTools&#39;,
+       &#39;Alfred-Skyblue/vue-draggable-plus&#39;, &#39;AvaloniaUI/Avalonia&#39;,
+       &#39;rough-stuff/rough&#39;, &#39;junegunn/fzf&#39;, &#39;macrozheng/mall&#39;,
+       &#39;jlevy/the-art-of-command-line&#39;, &#39;steven-tey/novel&#39;,
+       &#39;vercel/next.js&#39;, &#39;sherlock-project/sherlock&#39;, &#39;casey/just&#39;,
+       &#39;lmsqueezy/wedges&#39;, &#39;continuedev/continue&#39;,
+       &#39;qbittorrent/qBittorrent&#39;, &#39;zijie0/HumanSystemOptimization&#39;,
+       &#39;blossom-editor/blossom&#39;, &#39;caddyserver/caddy&#39;, &#39;beeper/imessage&#39;,
+       &#39;QwenLM/Qwen&#39;, &#39;colinhacks/zod&#39;, &#39;CopilotKit/CopilotKit&#39;,
+       &#39;microsoft/vscode&#39;, &#39;mtdvio/every-programmer-should-know&#39;,
+       &#39;Frooodle/Stirling-PDF&#39;, &#39;microsoft/TaskWeaver&#39;,
+       &#39;microsoft/monaco-editor&#39;, &#39;charmbracelet/huh&#39;,
+       &#39;lecepin/WeChatVideoDownloader&#39;, &#39;tokio-rs/tokio&#39;, &#39;dotnet/eShop&#39;,
+       &#39;pingcap/awesome-database-learning&#39;,
+       &#39;Developer-Y/cs-video-courses&#39;, &#39;torvalds/linux&#39;,
+       &#39;bigskysoftware/htmx&#39;, &#39;bradtraversy/50projects50days&#39;,
+       &#39;facebook/stylex&#39;, &#39;OpenTalker/SadTalker&#39;, &#39;ngosang/trackerslist&#39;,
+       &#39;google-deepmind/funsearch&#39;, &#39;graphdeco-inria/gaussian-splatting&#39;,
+       &#39;Lightning-AI/lit-gpt&#39;, &#39;guidance-ai/guidance&#39;,
+       &#39;eosphoros-ai/DB-GPT&#39;, &#39;outline/outline&#39;, &#39;traefik/traefik&#39;,
+       &#39;grafana/grafana&#39;, &#39;3Kmfi6HP/EDtunnel&#39;, &#39;johnma2006/mamba-minimal&#39;,
+       &#39;gregsadetsky/sagittarius&#39;, &#39;rasbt/LLMs-from-scratch&#39;,
+       &#39;nvbn/thefuck&#39;, &#39;TeamNewPipe/NewPipe&#39;, &#39;ray-project/ray&#39;,
+       &#39;acmesh-official/acme.sh&#39;, &#39;guoyww/AnimateDiff&#39;,
+       &#39;ratatui-org/ratatui&#39;, &#39;NaiboWang/EasySpider&#39;,
+       &#39;qianguyihao/blog-list&#39;, &#39;Floorp-Projects/Floorp&#39;,
+       &#39;bevyengine/bevy&#39;, &#39;ThePrimeagen/harpoon&#39;,
+       &#39;DataTalksClub/data-engineering-zoomcamp&#39;, &#39;sunner/ChatALL&#39;,
+       &#39;ast-grep/ast-grep&#39;, &#39;DataEngineer-io/data-engineer-handbook&#39;,
+       &#39;juanfont/headscale&#39;, &#39;Alvin9999/new-pac&#39;, &#39;unslothai/unsloth&#39;,
+       &#39;hiteshchoudhary/chai-aur-react&#39;, &#39;romkatv/powerlevel10k&#39;,
+       &#39;xxlong0/Wonder3D&#39;, &#39;sweepai/sweep&#39;, &#39;openai/tiktoken&#39;,
+       &#39;github/gitignore&#39;, &#39;toeverything/AFFiNE&#39;, &#39;filamentphp/filament&#39;,
+       &#39;tisfeng/Easydict&#39;, &#39;devv-ai/devv&#39;, &#39;coreybutler/nvm-windows&#39;,
+       &#39;d3george/slash-admin&#39;, &#39;tldraw/make-real&#39;,
+       &#39;meilisearch/meilisearch&#39;, &#39;kilimchoi/engineering-blogs&#39;,
+       &#39;Nukem9/dlssg-to-fsr3&#39;, &#39;mantinedev/mantine&#39;, &#39;pheralb/svgl&#39;,
+       &#39;greatfrontend/awesome-front-end-system-design&#39;,
+       &#39;facebookresearch/codellama&#39;, &#39;Whisky-App/Whisky&#39;,
+       &#39;pgvector/pgvector&#39;, &#39;Snailclimb/JavaGuide&#39;, &#39;microsoft/LLMLingua&#39;,
+       &#39;honojs/hono&#39;, &#39;apernet/hysteria&#39;, &#39;chenzomi12/DeepLearningSystem&#39;,
+       &#39;Az0x7/vulnerability-Checklist&#39;, &#39;danielmiessler/SecLists&#39;,
+       &#39;dair-ai/ML-Papers-of-the-Week&#39;, &#39;verida/verida-js&#39;,
+       &#39;Mikubill/sd-webui-controlnet&#39;, &#39;unocss/unocss&#39;, &#39;halo-dev/halo&#39;,
+       &#39;mlc-ai/mlc-llm&#39;, &#39;deepseek-ai/DeepSeek-Coder&#39;,
+       &#39;mouredev/python-web&#39;, &#39;HuolalaTech/page-spy-web&#39;,
+       &#39;koekeishiya/yabai&#39;, &#39;bleedline/aimoneyhunter&#39;,
+       &#39;GhostTroops/scan4all&#39;, &#39;utmapp/UTM&#39;, &#39;prs-eth/Marigold&#39;,
+       &#39;MlgmXyysd/Xiaomi-BootLoader-Questionnaire&#39;,
+       &#39;koodo-reader/koodo-reader&#39;, &#39;keyvanakbary/learning-notes&#39;,
+       &#39;cosmtrek/air&#39;, &#39;gofiber/fiber&#39;, &#39;Coframe/coffee&#39;,
+       &#39;HqWu-HITCS/Awesome-Chinese-LLM&#39;, &#39;paul-gauthier/aider&#39;,
+       &#39;Asabeneh/30-Days-Of-JavaScript&#39;, &#39;kadirnar/whisper-plus&#39;,
+       &#39;ascoders/weekly&#39;, &#39;etcd-io/etcd&#39;, &#39;redis/redis&#39;,
+       &#39;bricks-cloud/BricksLLM&#39;, &#39;RUCAIBox/LLMSurvey&#39;,
+       &#39;ashishps1/awesome-low-level-design&#39;, &#39;fr0gger/Awesome-GPT-Agents&#39;,
+       &#39;ActiveVisionLab/Awesome-LLM-3D&#39;, &#39;ytongbai/LVM&#39;,
+       &#39;keiko233/clash-nyanpasu&#39;, &#39;MatsuriDayo/nekoray&#39;,
+       &#39;wuyouzhuguli/SpringAll&#39;, &#39;Innei/Shiro&#39;, &#39;maotoumao/MusicFree&#39;,
+       &#39;djsime1/awesome-flipperzero&#39;, &#39;orbitinghail/sqlsync&#39;,
+       &#39;SimplifyJobs/Summer2024-Internships&#39;,
+       &#39;google-deepmind/materials_discovery&#39;, &#39;iperov/DeepFaceLab&#39;,
+       &#39;Johnshall/Shadowrocket-ADBlock-Rules-Forever&#39;,
+       &#39;langchain-ai/opengpts&#39;, &#39;ant-design/ant-design-web3&#39;,
+       &#39;Mozilla-Ocho/Memory-Cache&#39;, &#39;sickcodes/Docker-OSX&#39;,
+       &#39;YueChan/Live&#39;, &#39;Ftindy/IPTV-URL&#39;, &#39;nlohmann/json&#39;,
+       &#39;piglei/one-python-craftsman&#39;, &#39;primefaces/primevue&#39;,
+       &#39;you-dont-need/You-Dont-Need-Lodash-Underscore&#39;,
+       &#39;NopeCHALLC/nopecha-extension&#39;, &#39;LSPosed/LSPosed&#39;,
+       &#39;lean-dojo/LeanCopilot&#39;, &#39;Project-DARC/DARC&#39;, &#39;kellyjonbrazil/jc&#39;,
+       &#39;pathwaycom/llm-app&#39;, &#39;Totodore/socketioxide&#39;,
+       &#39;localstack/localstack&#39;, &#39;run-llama/rags&#39;,
+       &#39;chiteroman/PlayIntegrityFix&#39;,
+       &#39;m3y54m/Embedded-Engineering-Roadmap&#39;, &#39;invoke-ai/InvokeAI&#39;,
+       &#39;LiLittleCat/awesome-free-chatgpt&#39;, &#39;XIU2/CloudflareSpeedTest&#39;,
+       &#39;WuKongOpenSource/WukongCRM-11.0-JAVA&#39;,
+       &#39;dair-ai/Prompt-Engineering-Guide&#39;, &#39;epfLLM/meditron&#39;,
+       &#39;lstprjct/IDM-Activation-Script&#39;, &#39;vuejs/core&#39;,
+       &#39;react-hook-form/react-hook-form&#39;, &#39;udlbook/udlbook&#39;,
+       &#39;TheRamU/Fay&#39;, &#39;tuteng/Best-websites-a-programmer-should-visit-zh&#39;,
+       &#39;vfsfitvnm/ViMusic&#39;, &#39;PRIS-CV/DemoFusion&#39;, &#39;THUDM/ChatGLM-6B&#39;,
+       &#39;RUB-NDS/Terrapin-Scanner&#39;,
+       &#39;EthicalML/awesome-production-machine-learning&#39;,
+       &#39;friuns2/BlackFriday-GPTs-Prompts&#39;,
+       &#39;simondankelmann/Bluetooth-LE-Spam&#39;, &#39;nextui-org/nextui&#39;,
+       &#39;JShollaj/awesome-llm-interpretability&#39;, &#39;dunglas/frankenphp&#39;,
+       &#39;LouisShark/chatgpt_system_prompt&#39;,
+       &#39;robotics-survey/Awesome-Robotics-Foundation-Models&#39;,
+       &#39;SeaQL/FireDBG.for.Rust&#39;, &#39;bytedance/ImageDream&#39;,
+       &#39;google/comprehensive-rust&#39;, &#39;xiaolai/everyone-can-use-english&#39;,
+       &#39;Enraged-Rabbit-Community/ERCF_v2&#39;, &#39;plasmicapp/plasmic&#39;,
+       &#39;srush/Tensor-Puzzles&#39;, &#39;microsoft/windows-ai-studio&#39;,
+       &#39;kroma-network/tachyon&#39;, &#39;AmrDeveloper/GQL&#39;,
+       &#39;straight-tamago/misaka&#39;, &#39;THU-LYJ-Lab/T3Bench&#39;, &#39;01-ai/Yi&#39;,
+       &#39;pyenv/pyenv&#39;, &#39;ExpLangcn/NucleiTP&#39;, &#39;SylarLong/iztro&#39;,
+       &#39;The-Run-Philosophy-Organization/run&#39;, &#39;ordinals/ord&#39;,
+       &#39;CatVodTVOfficial/TVBoxOSC&#39;, &#39;01mf02/jaq&#39;, &#39;voxel51/fiftyone&#39;,
+       &#39;vpncn/vpncn.github.io&#39;, &#39;prasanthrangan/hyprdots&#39;, &#39;vaxilu/x-ui&#39;,
+       &#39;sh-lee-prml/HierSpeechpp&#39;, &#39;WuKongOpenSource/Wukong_nocode&#39;,
+       &#39;yformer/EfficientSAM&#39;, &#39;allenai/papermage&#39;,
+       &#39;krishnaik06/The-Grand-Complete-Data-Science-Materials&#39;,
+       &#39;MrNeRF/awesome-3D-gaussian-splatting&#39;, &#39;mouredev/Hello-Python&#39;,
+       &#39;QSCTech/zju-icicles&#39;, &#39;modood/Administrative-divisions-of-China&#39;,
+       &#39;chokcoco/iCSS&#39;, &#39;chaitin/SafeLine&#39;,
+       &#39;CodeWithHarry/Sigma-Web-Dev-Course&#39;, &#39;huggingface/optimum-nvidia&#39;,
+       &#39;devos50/qemu-ios&#39;, &#39;Dujltqzv/Some-Many-Books&#39;, &#39;iv-org/invidious&#39;,
+       &#39;dataelement/bisheng&#39;, &#39;PySimpleGUI/PySimpleGUI&#39;,
+       &#39;JJTech0130/pypush&#39;, &#39;aseprite/aseprite&#39;, &#39;isadorasophia/murder&#39;,
+       &#39;google/style-aligned&#39;, &#39;chongzhou96/EdgeSAM&#39;,
+       &#39;zhyever/PatchFusion&#39;,
+       &#39;miketromba/highest-paying-software-companies&#39;,
+       &#39;HuskyDG/magisk-files&#39;, &#39;adrianhajdin/event_platform&#39;,
+       &#39;elifgazioglu/doyouwannagooutwithme&#39;, &#39;laravel/pulse&#39;,
+       &#39;Pennyw0rth/NetExec&#39;, &#39;SuxueCode/WechatBakTool&#39;,
+       &#39;WuKongOpenSource/Wukong_ProjectManagement&#39;,
+       &#39;Cyfrin/security-and-auditing-full-course-s23&#39;,
+       &#39;joschan21/digitalhippo&#39;, &#39;Orillusion/orillusion&#39;,
+       &#39;openbao/openbao&#39;, &#39;DevxStudio/Phoenix-Clipper-Malware&#39;,
+       &#39;FuelLabs/fuels-rs&#39;, &#39;waydabber/BetterDisplay&#39;, &#39;isno/theByteBook&#39;,
+       &#39;rochus-keller/CspChan&#39;, &#39;linyiLYi/voice-assistant&#39;,
+       &#39;MichaelYuhe/ai-group-tabs&#39;, &#39;uvdesk/community-skeleton&#39;,
+       &#39;hiteshchoudhary/chai-backend&#39;, &#39;damo-vilab/AnyDoor&#39;,
+       &#39;damo-vilab/i2vgen-xl&#39;, &#39;FedML-AI/FedML&#39;, &#39;krayin/laravel-crm&#39;,
+       &#39;Universidade-Livre/ciencia-da-computacao&#39;, &#39;jepsen-io/maelstrom&#39;,
+       &#39;nikolaydubina/go-recipes&#39;, &#39;google/generative-ai-swift&#39;,
+       &#39;SafeBreach-Labs/PoolParty&#39;, &#39;LTH14/rcg&#39;,
+       &#39;100xdevs-cohort-2/assignments&#39;, &#39;xiaojieonly/Ehviewer_CN_SXJ&#39;,
+       &#39;ashishps1/awesome-low-low-design&#39;, &#39;AntonOsika/gpt-engineer&#39;,
+       &#39;refilc/naplo&#39;, &#39;WuKongOpenSource/Wukong_KnowledgeBase&#39;,
+       &#39;BUPT-OS/RROS&#39;, &#39;alsyundawy/Parallels&#39;,
+       &#39;sdg-1/consulting-handbook&#39;, &#39;Yidadaa/ChatGPT-Next-Web&#39;,
+       &#39;samuelcolvin/FastUI&#39;, &#39;FuelLabs/fuels-ts&#39;], dtype=object)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># map each repo and user to a unique numeric value</span>
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;category&quot;</span><span class="p">)</span>
+<span class="n">data</span><span class="p">[</span><span class="s1">&#39;repo&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;repo&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;category&quot;</span><span class="p">)</span>
+
+<span class="c1"># create a sparse matrix of all the users/repos</span>
+<span class="n">stars</span> <span class="o">=</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                   <span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;user&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cat</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> 
+                    <span class="n">data</span><span class="p">[</span><span class="s1">&#39;repo&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cat</span><span class="o">.</span><span class="n">codes</span><span class="o">.</span><span class="n">copy</span><span class="p">())))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">stars</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;8896x993 sparse matrix of type &#39;&lt;class &#39;numpy.float64&#39;&gt;&#39;
+	with 160360 stored elements in COOrdinate format&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">repos_stars</span> <span class="o">=</span> <span class="n">stars</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">repos_stars</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Stars received by repositories&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Text(0.5, 1.0, &#39;Stars received by repositories&#39;)
+</pre></div>
+</div>
+<img alt="../_images/c83352c63709dd5016b92a48b2d1c5b52037b7c8814b02c157354d11cd73c510.png" src="../_images/c83352c63709dd5016b92a48b2d1c5b52037b7c8814b02c157354d11cd73c510.png" />
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># retrieve repository names and ids</span>
+<span class="n">repos</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;repo&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cat</span><span class="o">.</span><span class="n">categories</span><span class="p">))</span>
+<span class="n">repo_ids</span> <span class="o">=</span> <span class="p">{</span><span class="n">r</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">repos</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># top five repositories in Dec 2023</span>
+<span class="n">max_stars_ind</span> <span class="o">=</span> <span class="n">repos_stars</span><span class="o">.</span><span class="n">argpartition</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">)[:,</span> <span class="o">-</span><span class="mi">5</span><span class="p">:]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">max_stars_ind</span><span class="o">.</span><span class="n">A1</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">repos</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>magic-research/magic-animate
+Frooodle/Stirling-PDF
+cumulo-autumn/StreamDiffusion
+linexjlin/GPTs
+lobehub/lobe-chat
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Using the sparse matrix, we may train a low rank model using the ALS algorithm</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">AlternatingLeastSquares</span><span class="p">(</span><span class="n">factors</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
+                                <span class="n">regularization</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+                                <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+                                <span class="n">iterations</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>C:\Users\moses\.venv\de300\Lib\site-packages\implicit\cpu\als.py:95: RuntimeWarning: OpenBLAS is configured to use 4 threads. It is highly recommended to disable its internal threadpool by setting the environment variable &#39;OPENBLAS_NUM_THREADS=1&#39; or by calling &#39;threadpoolctl.threadpool_limits(1, &quot;blas&quot;)&#39;. Having OpenBLAS use a threadpool can lead to severe performance issues here.
+  check_blas_config()
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">confidence</span> <span class="o">=</span> <span class="mi">40</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">confidence</span> <span class="o">*</span> <span class="n">stars</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>C:\Users\moses\.venv\de300\Lib\site-packages\implicit\utils.py:164: ParameterWarning: Method expects CSR input, and was passed coo_matrix instead. Converting to CSR took 0.0044841766357421875 seconds
+  warnings.warn(
+</pre></div>
+</div>
+<script type="application/vnd.jupyter.widget-view+json">{"version_major": 2, "version_minor": 0, "model_id": "5135481def1d4aa1aaf80c8d90af55f8"}</script></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># retrieve top &quot;similar&quot; repositories given an entry</span>
+<span class="n">model</span><span class="o">.</span><span class="n">similar_items</span><span class="p">(</span><span class="n">repo_ids</span><span class="p">[</span><span class="s1">&#39;tensorflow/tensorflow&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(array([886, 460, 831, 792, 380, 725, 743, 614, 590, 671]),
+ array([1.        , 0.59811158, 0.58870446, 0.53173123, 0.45791068,
+        0.43961905, 0.43581392, 0.4176003 , 0.40926924, 0.40901302]))
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">r</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">similar_items</span><span class="p">(</span><span class="n">repo_ids</span><span class="p">[</span><span class="s1">&#39;tensorflow/tensorflow&#39;</span><span class="p">])</span>
+<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="p">)):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">repos</span><span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="n">k</span><span class="p">]],</span> <span class="n">s</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>tensorflow/tensorflow 1.0
+github/gitignore 0.5981115796027698
+scikit-learn/scikit-learn 0.5887044625216878
+pytorch/pytorch 0.5317312314656671
+django/django 0.45791067829830134
+ohmyzsh/ohmyzsh 0.43961904758565257
+opencv/opencv 0.43581391678804055
+llvm/llvm-project 0.41760029640570356
+kubernetes/kubernetes 0.40926924068395043
+microsoft/terminal 0.4090130234825417
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">user_stars</span><span class="p">(</span><span class="n">user</span><span class="p">):</span>
+    <span class="n">repos</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://api.github.com/users/</span><span class="si">{}</span><span class="s2">/starred&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">url</span><span class="p">:</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">auth</span><span class="o">=</span><span class="n">github_auth</span><span class="p">)</span>
+        <span class="n">repos</span> <span class="o">+=</span> <span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="s2">&quot;full_name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">json</span><span class="p">()]</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">links</span><span class="p">[</span><span class="s2">&quot;next&quot;</span><span class="p">][</span><span class="s2">&quot;url&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="s2">&quot;next&quot;</span> <span class="ow">in</span> <span class="n">resp</span><span class="o">.</span><span class="n">links</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="n">repos</span>
+
+<span class="k">def</span> <span class="nf">user_items</span><span class="p">(</span><span class="n">u_stars</span><span class="p">):</span>
+    <span class="n">star_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">repo_ids</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">u_stars</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">repo_ids</span><span class="p">]</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">confidence</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">star_ids</span><span class="p">]</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">star_ids</span><span class="p">]</span>
+    <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">item_factors</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">coo_matrix</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">star_ids</span><span class="p">)),</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">tocsr</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">jbochi</span> <span class="o">=</span> <span class="n">user_items</span><span class="p">(</span><span class="n">user_stars</span><span class="p">(</span><span class="s2">&quot;jbochi&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">recommend</span><span class="p">(</span><span class="n">user_items</span><span class="p">):</span>
+    <span class="n">recs</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">recommend</span><span class="p">(</span><span class="n">userid</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">user_items</span><span class="o">=</span><span class="n">user_items</span><span class="p">,</span> <span class="n">recalculate_user</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">r</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">recs</span>
+        
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">r</span><span class="p">)):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">repos</span><span class="p">[</span><span class="n">r</span><span class="p">[</span><span class="n">k</span><span class="p">]],</span> <span class="n">s</span><span class="p">[</span><span class="n">k</span><span class="p">])</span>
+    <span class="k">return</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">recommend</span><span class="p">(</span><span class="n">jbochi</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>jmorganca/ollama 1.2411476003040829
+godotengine/godot 0.9913981601704329
+pytorch/pytorch 0.9767307066866706
+python/cpython 0.9445260469364365
+astral-sh/ruff 0.8885051589499616
+imartinez/privateGPT 0.8698822979381461
+openai/whisper 0.8672426654620164
+helix-editor/helix 0.838959445591344
+ggerganov/llama.cpp 0.8297832994089882
+grafana/grafana 0.8207999294644055
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./examples"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../notes/03-missing-data.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Handling missing data</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../notes/04-outlier.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Handling outliers</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Moses Y.-H. Chan
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
