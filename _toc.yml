@@ -3,12 +3,18 @@
 
 format: jb-book
 root: 00-syllabus
-chapters:
-- file: notes/01-intro-data-engineering
-- file: examples/ex-hospital-readmission
-chapters:
-- file: notes/02-exploratory-data-analysis
-- file: notes/03-missing-data
-- file: examples/ex-recommendations
-- file: notes/04-outlier
-- file: 99-references
+parts:
+- caption: Introduction to data engineering
+  chapters:
+  - file: notes/01-intro-data-engineering
+  - file: examples/ex-hospital-readmission
+- caption: Exploratory data analysis
+  chapters:
+  - file: notes/02-exploratory-data-analysis
+  - file: notes/03-missing-data
+  - file: examples/ex-recommendations
+  - file: notes/04-outlier
+- caption: Appendix
+  chapters:
+  - file: notes/0a-jupyter-ec2
+  - file: 99-references
