@@ -1,0 +1,730 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>(EX) Electronic medical record &#8212; DATA_ENG 300 Data Engineering Studio</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/ex-electronic-medical-record';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Setting up EC2 instance for jupyter notebook" href="../notes/0a-jupyter-ec2.html" />
+    <link rel="prev" title="Data Modeling" href="../notes/05-data-modeling.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../00-syllabus.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">DATA_ENG 300 Data Engineering Studio</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../00-syllabus.html">
+                    DATA_ENG 300: Data Engineering Studio
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction to data engineering</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../notes/01-intro-data-engineering.html">Introduction to Data Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex-hospital-readmission.html">(EX) Hospital readmission</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Exploratory data analysis</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../notes/02-exploratory-data-analysis.html">Exploratory Data Analysis</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../notes/03-missing-data.html">Handling missing data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ex-recommendations.html">(EX) Recommendation system with alternating least squares algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notes/04-outlier.html">Handling outliers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data modeling</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../notes/05-data-modeling.html">Data Modeling</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">(EX) Electronic medical record</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Appendix</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../notes/0a-jupyter-ec2.html">Setting up EC2 instance for jupyter notebook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../99-references.html">References</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/examples/ex-electronic-medical-record.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>(EX) Electronic medical record</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simple-queries">Simple queries</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#derivative-queries">Derivative queries</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#additional-reference-queries">Additional reference queries</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="ex-electronic-medical-record">
+<span id="id1"></span><h1>(EX) Electronic medical record<a class="headerlink" href="#ex-electronic-medical-record" title="Permalink to this heading">#</a></h1>
+<p>This example utilizes the <a class="reference external" href="https://physionet.org/content/mimiciii-demo/1.4/">MIMIC III demo</a> dataset in illustrating the use of database using DuckDB.</p>
+<p><em>Quick notes about DuckDB:</em></p>
+<ul class="simple">
+<li><p>DuckDB is a relational database for analytics processing (i.e., OLAP)</p></li>
+<li><p>DuckDB is columnar-oriented</p></li>
+<li><p>DuckDB scales reasonably for <em>relatively</em> large datasets and works well for local development</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">duckdb</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># establish connection</span>
+<span class="n">conn</span> <span class="o">=</span> <span class="n">duckdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s1">&#39;../lab/dataset/mimic.db&#39;</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span><span class="s1">&#39;SHOW TABLES;&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>┌────────────┐
+│    name    │
+│  varchar   │
+├────────────┤
+│ ADMISSIONS │
+│ D_ICDPROCS │
+│ ICUSTAYS   │
+│ PATIENTS   │
+│ PROCS_ICD  │
+└────────────┘
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># metadata for add</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    SELECT column_name, data_type FROM information_schema.columns </span>
+<span class="sd">    WHERE table_name = &#39;ICDPROCS&#39;;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>┌─────────────┬───────────┐
+│ column_name │ data_type │
+│   varchar   │  varchar  │
+├─────────────────────────┤
+│         0 rows          │
+└─────────────────────────┘
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># admission table at a glance</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="simple-queries">
+<h2>Simple queries<a class="headerlink" href="#simple-queries" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># number of patients</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># number of patients by gender</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># take a glance at the ICUSTAY table</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="derivative-queries">
+<h2>Derivative queries<a class="headerlink" href="#derivative-queries" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># calculate the age of each patient and include in the table above</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># calculate the duration of admission before each patient is admitted to the ICU</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># identify if a patient passes away when they are in the ICU</span>
+<span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="additional-reference-queries">
+<h2>Additional reference queries<a class="headerlink" href="#additional-reference-queries" title="Permalink to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># </span>
+<span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    SELECT p.subject_id, p.dob, a.hadm_id,</span>
+<span class="sd">        a.admittime, p.expire_flag</span>
+<span class="sd">    FROM admissions a</span>
+<span class="sd">    INNER JOIN patients p</span>
+<span class="sd">    ON p.subject_id = a.subject_id</span>
+<span class="sd">    ORDER BY admittime;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>┌────────────┬─────────────────────┬─────────┬─────────────────────┬─────────────┐
+│ subject_id │         dob         │ hadm_id │      admittime      │ expire_flag │
+│   int32    │       varchar       │  int32  │       varchar       │    int32    │
+├────────────┼─────────────────────┼─────────┼─────────────────────┼─────────────┤
+│      42231 │ 2016-12-05 00:00:00 │  171878 │ 2102-08-29 07:15:00 │           1 │
+│      43881 │ 2051-03-24 00:00:00 │  172454 │ 2104-09-24 17:31:00 │           1 │
+│      43881 │ 2051-03-24 00:00:00 │  167021 │ 2104-10-24 09:44:00 │           1 │
+│      10102 │ 2035-04-13 00:00:00 │  164869 │ 2105-05-29 18:18:00 │           1 │
+│      43879 │ 2051-07-25 00:00:00 │  158100 │ 2106-08-30 15:43:00 │           1 │
+│      10088 │ 2029-07-09 00:00:00 │  169938 │ 2107-01-04 11:59:00 │           1 │
+│      10061 │ 2031-05-19 00:00:00 │  145203 │ 2107-01-16 11:33:00 │           1 │
+│      10088 │ 2029-07-09 00:00:00 │  168233 │ 2107-01-29 04:00:00 │           1 │
+│      10076 │ 2038-05-10 00:00:00 │  198503 │ 2107-03-21 21:16:00 │           1 │
+│      10088 │ 2029-07-09 00:00:00 │  149044 │ 2107-05-12 18:00:00 │           1 │
+│        ·   │          ·          │     ·   │          ·          │           · │
+│        ·   │          ·          │     ·   │          ·          │           · │
+│        ·   │          ·          │     ·   │          ·          │           · │
+│      41976 │ 2136-07-28 00:00:00 │  130681 │ 2200-10-29 20:46:00 │           1 │
+│      41976 │ 2136-07-28 00:00:00 │  180546 │ 2201-05-12 10:49:00 │           1 │
+│      41976 │ 2136-07-28 00:00:00 │  174863 │ 2201-08-10 23:00:00 │           1 │
+│      41976 │ 2136-07-28 00:00:00 │  125013 │ 2201-09-28 16:47:00 │           1 │
+│      41976 │ 2136-07-28 00:00:00 │  155297 │ 2201-11-16 23:00:00 │           1 │
+│      41976 │ 2136-07-28 00:00:00 │  179418 │ 2201-12-31 19:19:00 │           1 │
+│      41976 │ 2136-07-28 00:00:00 │  151798 │ 2202-02-15 19:01:00 │           1 │
+│      41976 │ 2136-07-28 00:00:00 │  145024 │ 2202-05-01 22:00:00 │           1 │
+│      41976 │ 2136-07-28 00:00:00 │  149469 │ 2202-09-16 21:56:00 │           1 │
+│      41976 │ 2136-07-28 00:00:00 │  153826 │ 2202-10-03 01:45:00 │           1 │
+├────────────┴─────────────────────┴─────────┴─────────────────────┴─────────────┤
+│ 129 rows (20 shown)                                                  5 columns │
+└────────────────────────────────────────────────────────────────────────────────┘
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span> <span class="c1"># </span>
+<span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    SELECT p.subject_id, p.dob, a.hadm_id,</span>
+<span class="sd">        a.admittime, p.expire_flag,</span>
+<span class="sd">        MIN (a.admittime) OVER (PARTITION BY p.subject_id) AS first_admittime</span>
+<span class="sd">    FROM admissions a</span>
+<span class="sd">    INNER JOIN patients p</span>
+<span class="sd">    ON p.subject_id = a.subject_id</span>
+<span class="sd">    ORDER BY a.hadm_id, p.subject_id;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>┌────────────┬─────────────────────┬─────────┬─────────────────────┬─────────────┬─────────────────────┐
+│ subject_id │         dob         │ hadm_id │      admittime      │ expire_flag │   first_admittime   │
+│   int32    │       varchar       │  int32  │       varchar       │    int32    │       varchar       │
+├────────────┼─────────────────────┼─────────┼─────────────────────┼─────────────┼─────────────────────┤
+│      10056 │ 2046-02-27 00:00:00 │  100375 │ 2129-05-02 00:12:00 │           1 │ 2129-05-02 00:12:00 │
+│      42430 │ 2061-12-10 00:00:00 │  100969 │ 2142-11-26 21:20:00 │           1 │ 2142-11-26 21:20:00 │
+│      41914 │ 2090-11-16 00:00:00 │  101361 │ 2145-12-01 18:13:00 │           1 │ 2145-12-01 18:13:00 │
+│      42135 │ 2083-09-20 00:00:00 │  102203 │ 2127-07-23 15:21:00 │           1 │ 2127-07-23 15:21:00 │
+│      44228 │ 2112-10-22 00:00:00 │  103379 │ 2170-12-15 03:14:00 │           1 │ 2170-12-15 03:14:00 │
+│      10026 │ 1895-05-17 00:00:00 │  103770 │ 2195-05-17 07:39:00 │           1 │ 2195-05-17 07:39:00 │
+│      40612 │ 2073-08-13 00:00:00 │  104697 │ 2159-11-17 03:28:00 │           1 │ 2159-11-17 03:28:00 │
+│      10117 │ 2072-05-05 00:00:00 │  105150 │ 2138-11-09 18:08:00 │           1 │ 2138-06-05 17:23:00 │
+│      10011 │ 2090-06-05 00:00:00 │  105331 │ 2126-08-14 22:32:00 │           1 │ 2126-08-14 22:32:00 │
+│      41983 │ 1851-09-12 00:00:00 │  107689 │ 2151-09-12 17:04:00 │           1 │ 2151-09-12 17:04:00 │
+│        ·   │          ·          │     ·   │          ·          │           · │          ·          │
+│        ·   │          ·          │     ·   │          ·          │           · │          ·          │
+│        ·   │          ·          │     ·   │          ·          │           · │          ·          │
+│      10089 │ 2046-04-18 00:00:00 │  190301 │ 2132-08-05 18:48:00 │           1 │ 2132-08-05 18:48:00 │
+│      44222 │ 2107-06-27 00:00:00 │  192189 │ 2180-07-19 06:55:00 │           1 │ 2180-07-19 06:55:00 │
+│      10120 │ 2088-05-05 00:00:00 │  193924 │ 2115-05-12 14:52:00 │           1 │ 2115-05-12 14:52:00 │
+│      42281 │ 2051-03-23 00:00:00 │  195911 │ 2119-10-17 05:58:00 │           1 │ 2119-10-17 05:58:00 │
+│      10132 │ 2058-04-23 00:00:00 │  197611 │ 2123-08-23 20:00:00 │           1 │ 2123-08-23 20:00:00 │
+│      44083 │ 2057-11-15 00:00:00 │  198330 │ 2112-05-28 15:45:00 │           1 │ 2112-05-04 08:00:00 │
+│      40177 │ 2082-06-27 00:00:00 │  198480 │ 2169-05-06 23:16:00 │           1 │ 2169-05-06 23:16:00 │
+│      10076 │ 2038-05-10 00:00:00 │  198503 │ 2107-03-21 21:16:00 │           1 │ 2107-03-21 21:16:00 │
+│      10017 │ 2075-09-21 00:00:00 │  199207 │ 2149-05-26 17:19:00 │           1 │ 2149-05-26 17:19:00 │
+│      10027 │ 2108-01-15 00:00:00 │  199395 │ 2190-07-13 07:15:00 │           1 │ 2190-07-13 07:15:00 │
+├────────────┴─────────────────────┴─────────┴─────────────────────┴─────────────┴─────────────────────┤
+│ 129 rows (20 shown)                                                                        6 columns │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────┘
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./examples"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../notes/05-data-modeling.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Data Modeling</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../notes/0a-jupyter-ec2.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Setting up EC2 instance for jupyter notebook</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simple-queries">Simple queries</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#derivative-queries">Derivative queries</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#additional-reference-queries">Additional reference queries</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Moses Y.-H. Chan
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

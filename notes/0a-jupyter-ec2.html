@@ -66,7 +66,7 @@ const thebe_selector_output = ".output, .cell_output"
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="References" href="../99-references.html" />
-    <link rel="prev" title="Handling outliers" href="04-outlier.html" />
+    <link rel="prev" title="(EX) Electronic medical record" href="../examples/ex-electronic-medical-record.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -174,6 +174,11 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l1"><a class="reference internal" href="03-missing-data.html">Handling missing data</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/ex-recommendations.html">(EX) Recommendation system with alternating least squares algorithm</a></li>
 <li class="toctree-l1"><a class="reference internal" href="04-outlier.html">Handling outliers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data modeling</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="05-data-modeling.html">Data Modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/ex-electronic-medical-record.html">(EX) Electronic medical record</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Appendix</span></p>
 <ul class="current nav bd-sidenav">
@@ -327,7 +332,7 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#important-whenever-you-are-not-running-anything-for-more-than-15-minutes-you-should-stop-the-ec2-instance-on-the-aws-instances-page">Important: Whenever you are not running anything (for more than 15 minutes), you should stop the EC2 instance on the AWS <code class="docutils literal notranslate"><span class="pre">Instances</span></code> page.</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reconnect-to-ec2-jupyter-notebook">Reconnect to EC2 Jupyter notebook</a></li>
 </ul>
             </nav>
         </div>
@@ -450,8 +455,23 @@ document.write(`
 <ol class="arabic simple" start="8">
 <li><p>Stop your EC2 instance on AWS <code class="docutils literal notranslate"><span class="pre">Instances</span></code> page.</p></li>
 </ol>
-<section id="important-whenever-you-are-not-running-anything-for-more-than-15-minutes-you-should-stop-the-ec2-instance-on-the-aws-instances-page">
-<h2>Important: Whenever you are not running anything (for more than 15 minutes), you should stop the EC2 instance on the AWS <code class="docutils literal notranslate"><span class="pre">Instances</span></code> page.<a class="headerlink" href="#important-whenever-you-are-not-running-anything-for-more-than-15-minutes-you-should-stop-the-ec2-instance-on-the-aws-instances-page" title="Permalink to this heading">#</a></h2>
+<p><strong>Important: Whenever you are not running anything (for more than 15 minutes), you should stop the EC2 instance on the AWS <code class="docutils literal notranslate"><span class="pre">Instances</span></code> page.</strong></p>
+<section id="reconnect-to-ec2-jupyter-notebook">
+<h2>Reconnect to EC2 Jupyter notebook<a class="headerlink" href="#reconnect-to-ec2-jupyter-notebook" title="Permalink to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>Start your EC2 instance from <a class="reference external" href="https://nu-sso.awsapps.com/start/">https://nu-sso.awsapps.com/start/</a>. (<em>The one you have a private key for.</em>)</p></li>
+<li><p>Once the EC2 instance is running, connect to the instance via SSH</p>
+<ul class="simple">
+<li><p>Under the SSH client tab, you will see the instructions to connect to the EC2 instance via SSH on your console.</p></li>
+</ul>
+</li>
+<li><p>If your EC2 console shows <code class="docutils literal notranslate"><span class="pre">(base)</span></code> before your cursor, it indicates that conda environment is already running.</p>
+<ul class="simple">
+<li><p>If not, you have to run <code class="docutils literal notranslate"><span class="pre">eval</span> <span class="pre">&quot;$($CONDA_PATH/bin/conda</span> <span class="pre">shell.bash</span> <span class="pre">hook)&quot;</span></code> to activate the conda environment.</p></li>
+</ul>
+</li>
+<li><p>SSH into Jupyter notebook on EC2 (as in step 7 above.)</p></li>
+</ol>
 </section>
 </section>
 
@@ -486,12 +506,12 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="04-outlier.html"
+       href="../examples/ex-electronic-medical-record.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Handling outliers</p>
+        <p class="prev-next-title">(EX) Electronic medical record</p>
       </div>
     </a>
     <a class="right-next"
@@ -518,7 +538,7 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#important-whenever-you-are-not-running-anything-for-more-than-15-minutes-you-should-stop-the-ec2-instance-on-the-aws-instances-page">Important: Whenever you are not running anything (for more than 15 minutes), you should stop the EC2 instance on the AWS <code class="docutils literal notranslate"><span class="pre">Instances</span></code> page.</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reconnect-to-ec2-jupyter-notebook">Reconnect to EC2 Jupyter notebook</a></li>
 </ul>
   </nav></div>
 

@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Introduction to Data Engineering &#8212; DATA_ENG 300 Data Engineering Studio</title>
+    <title>Data Modeling &#8212; DATA_ENG 300 Data Engineering Studio</title>
   
   
   
@@ -62,11 +62,11 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'notes/01-intro-data-engineering';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notes/05-data-modeling';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="(EX) Hospital readmission" href="../examples/ex-hospital-readmission.html" />
-    <link rel="prev" title="DATA_ENG 300: Data Engineering Studio" href="../00-syllabus.html" />
+    <link rel="next" title="(EX) Electronic medical record" href="../examples/ex-electronic-medical-record.html" />
+    <link rel="prev" title="Handling outliers" href="04-outlier.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -163,8 +163,8 @@ const thebe_selector_output = ".output, .cell_output"
             </li>
         </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction to data engineering</span></p>
-<ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Introduction to Data Engineering</a></li>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01-intro-data-engineering.html">Introduction to Data Engineering</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/ex-hospital-readmission.html">(EX) Hospital readmission</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Exploratory data analysis</span></p>
@@ -176,8 +176,8 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l1"><a class="reference internal" href="04-outlier.html">Handling outliers</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Data modeling</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="05-data-modeling.html">Data Modeling</a></li>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Data Modeling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/ex-electronic-medical-record.html">(EX) Electronic medical record</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Appendix</span></p>
@@ -238,7 +238,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="../_sources/notes/01-intro-data-engineering.ipynb" target="_blank"
+      <li><a href="../_sources/notes/05-data-modeling.ipynb" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -322,7 +322,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Introduction to Data Engineering</h1>
+    <h1>Data Modeling</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -332,7 +332,9 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-engineering-lifecycle">Data Engineering Lifecycle</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples-of-data-engineering-scenarios">Examples of data engineering scenarios</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#database-and-query">Database and query</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ex-electronic-medical-record"><span class="xref std std-ref">ex-electronic-medical-record</span></a></li>
 </ul>
             </nav>
         </div>
@@ -344,25 +346,74 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="introduction-to-data-engineering">
-<h1>Introduction to Data Engineering<a class="headerlink" href="#introduction-to-data-engineering" title="Permalink to this heading">#</a></h1>
-<p>This notebook summarizes the data engineering lifecycle, and emphasizes the components covered in DATA_ENG 300.</p>
-<section id="data-engineering-lifecycle">
-<h2>Data Engineering Lifecycle<a class="headerlink" href="#data-engineering-lifecycle" title="Permalink to this heading">#</a></h2>
-<p><span id="id1">Reis and Housley [<a class="reference internal" href="../99-references.html#id2" title="Joe Reis and Matt Housley. Fundamentals of Data Engineering. O'Reilly Media, Inc., 2022.">2022</a>]</span> describes the data engineering lifecycle with five main stages:</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="data-modeling">
+<h1>Data Modeling<a class="headerlink" href="#data-modeling" title="Permalink to this heading">#</a></h1>
+<p>This set of notes introduces concepts of data modeling and the associated tools.</p>
+<p><em>Data modeling</em> is essentially … how you model the data, or how you perceive the data structure as presented in the real world.</p>
+<section id="examples-of-data-engineering-scenarios">
+<h2>Examples of data engineering scenarios<a class="headerlink" href="#examples-of-data-engineering-scenarios" title="Permalink to this heading">#</a></h2>
+<p><em>Online transaction processing (OLTP)</em></p>
 <ul class="simple">
-<li><p>Generation</p></li>
-<li><p>Storage</p></li>
-<li><p>Ingestion</p></li>
-<li><p>Transformation</p></li>
-<li><p>Serving data</p></li>
+<li><p>Any transactions, literally</p></li>
+<li><p>e.g., retail, banking, texting</p></li>
 </ul>
-<figure class="align-default" id="data-eng-lifecycle">
-<a class="reference internal image-reference" href="../_images/fode_0201.png"><img alt="../_images/fode_0201.png" src="../_images/fode_0201.png" style="width: 90%;" /></a>
+<p><em>Online analytics processing (OLAP)</em></p>
+<ul class="simple">
+<li><p>Interactive analytics <em>queries</em></p></li>
+<li><p>i.e., retrieve and aggregate data for information (or insight)</p></li>
+<li><p>e.g., airline delay (homework)</p></li>
+</ul>
+<p><em>Change data capture</em></p>
+<ul class="simple">
+<li><p>Snapshots, differential updates</p></li>
+<li><p>e.g., appointment scheduling</p></li>
+</ul>
+<figure class="align-default" id="mend-cheps">
+<a class="reference internal image-reference" href="../_images/mend-cheps.png"><img alt="../_images/mend-cheps.png" src="../_images/mend-cheps.png" style="width: 70%;" /></a>
 <figcaption>
-<p><span class="caption-number">Fig. 1 </span><span class="caption-text">Data engineering lifecycle components</span><a class="headerlink" href="#data-eng-lifecycle" title="Permalink to this image">#</a></p>
+<p><span class="caption-number">Fig. 6 </span><span class="caption-text">Average provider availability into the future.</span><a class="headerlink" href="#mend-cheps" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
+<p><em>Logs</em></p>
+<ul class="simple">
+<li><p>binary logs</p></li>
+<li><p>JSON</p></li>
+<li><p>Plain-text</p></li>
+</ul>
+</section>
+<section id="database-and-query">
+<h2>Database and query<a class="headerlink" href="#database-and-query" title="Permalink to this heading">#</a></h2>
+<p><em>Database</em> refers to a data storage system and a query engine.</p>
+<p><em>Query</em> refers to the avenue to retrieve and act on data.<br />
+Query commands generally include:</p>
+<ul class="simple">
+<li><p>Data Definition Language, e.g., <code class="docutils literal notranslate"><span class="pre">CREATE</span></code>, <code class="docutils literal notranslate"><span class="pre">UPDATE</span></code>, <code class="docutils literal notranslate"><span class="pre">DROP</span></code></p></li>
+<li><p>Data Manipulation Language, e.g., <code class="docutils literal notranslate"><span class="pre">SELECT</span></code>, <code class="docutils literal notranslate"><span class="pre">INSERT</span></code>, <code class="docutils literal notranslate"><span class="pre">UPDATE</span></code>, <code class="docutils literal notranslate"><span class="pre">DELETE</span></code>, <code class="docutils literal notranslate"><span class="pre">COPY</span></code>, <code class="docutils literal notranslate"><span class="pre">MERGE</span></code></p></li>
+<li><p>Data Control Language, e.g., <code class="docutils literal notranslate"><span class="pre">GRANT</span></code>, <code class="docutils literal notranslate"><span class="pre">DENY</span></code>, <code class="docutils literal notranslate"><span class="pre">REVOKE</span></code></p></li>
+<li><p>Transaction Control Language, e.g., <code class="docutils literal notranslate"><span class="pre">COMMIT</span></code>, <code class="docutils literal notranslate"><span class="pre">ROLLBACK</span></code></p></li>
+</ul>
+<p>Several notes about queries:</p>
+<ul class="simple">
+<li><p>Complex queries incur higher computations.</p>
+<ul>
+<li><p><em>What is the goal?</em> Are we looking for a particular flight? or are we finding the number of flights that are delayed due to weather within date A and date B?</p></li>
+</ul>
+</li>
+<li><p>Avoid large number of scans when possible.  Prepartitioning or pruning may be beneficial.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">EXPLAIN</span></code> on a query for analysis.</p></li>
+<li><p>Use common table expressions, e.g.,</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">WITH</span>
+  <span class="n">cte1</span> <span class="n">AS</span> <span class="p">(</span><span class="n">SELECT</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="n">FROM</span> <span class="n">table1</span><span class="p">),</span>
+  <span class="n">cte2</span> <span class="n">AS</span> <span class="p">(</span><span class="n">SELECT</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span> <span class="n">FROM</span> <span class="n">table2</span><span class="p">)</span>
+<span class="n">SELECT</span> <span class="n">b</span><span class="p">,</span> <span class="n">d</span> <span class="n">FROM</span> <span class="n">cte1</span> <span class="n">JOIN</span> <span class="n">cte2</span>
+<span class="n">WHERE</span> <span class="n">cte1</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="n">cte2</span><span class="o">.</span><span class="n">c</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="ex-electronic-medical-record">
+<h2><a class="reference internal" href="../examples/ex-electronic-medical-record.html#ex-electronic-medical-record"><span class="std std-ref">(EX) Electronic medical record</span></a><a class="headerlink" href="#ex-electronic-medical-record" title="Permalink to this heading">#</a></h2>
+<p><strong>References:</strong> Chapters 5 and 8 of <span id="id1">Reis and Housley [<a class="reference internal" href="../99-references.html#id2" title="Joe Reis and Matt Housley. Fundamentals of Data Engineering. O'Reilly Media, Inc., 2022.">2022</a>]</span> are excellent resources on this topic.</p>
 </section>
 </section>
 
@@ -397,20 +448,20 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="../00-syllabus.html"
+       href="04-outlier.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">DATA_ENG 300: Data Engineering Studio</p>
+        <p class="prev-next-title">Handling outliers</p>
       </div>
     </a>
     <a class="right-next"
-       href="../examples/ex-hospital-readmission.html"
+       href="../examples/ex-electronic-medical-record.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">(EX) Hospital readmission</p>
+        <p class="prev-next-title">(EX) Electronic medical record</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -429,7 +480,9 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-engineering-lifecycle">Data Engineering Lifecycle</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples-of-data-engineering-scenarios">Examples of data engineering scenarios</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#database-and-query">Database and query</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ex-electronic-medical-record"><span class="xref std std-ref">ex-electronic-medical-record</span></a></li>
 </ul>
   </nav></div>
 
