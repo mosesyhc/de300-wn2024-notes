@@ -14,6 +14,10 @@ parts:
   - file: notes/03-missing-data
   - file: examples/ex-recommendations
   - file: notes/04-outlier
+- caption: Data modeling
+  chapters:
+  - file: notes/05-data-modeling
+  - file: examples/ex-electronic-medical-record
 - caption: Appendix
   chapters:
   - file: notes/0a-jupyter-ec2
