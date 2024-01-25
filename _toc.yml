@@ -18,6 +18,7 @@ parts:
   chapters:
   - file: notes/05-data-modeling
   - file: examples/ex-electronic-medical-record
+  - file: notes/06-intro-to-nosql
 - caption: Appendix
   chapters:
   - file: notes/0a-jupyter-ec2
