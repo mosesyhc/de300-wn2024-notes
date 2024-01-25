@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Data Modeling &#8212; DATA_ENG 300 Data Engineering Studio</title>
+    <title>Introduction to NoSQL databases &#8212; DATA_ENG 300 Data Engineering Studio</title>
   
   
   
@@ -62,11 +62,11 @@ const thebe_selector_input = "pre"
 const thebe_selector_output = ".output, .cell_output"
 </script>
     <script async="async" src="../_static/sphinx-thebe.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'notes/05-data-modeling';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notes/06-intro-to-nosql';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="(EX) Electronic medical record" href="../examples/ex-electronic-medical-record.html" />
-    <link rel="prev" title="Handling outliers" href="04-outlier.html" />
+    <link rel="next" title="Setting up EC2 instance for jupyter notebook" href="0a-jupyter-ec2.html" />
+    <link rel="prev" title="(EX) Electronic medical record" href="../examples/ex-electronic-medical-record.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -177,9 +177,9 @@ const thebe_selector_output = ".output, .cell_output"
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Data modeling</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Data Modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05-data-modeling.html">Data Modeling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/ex-electronic-medical-record.html">(EX) Electronic medical record</a></li>
-<li class="toctree-l1"><a class="reference internal" href="06-intro-to-nosql.html">Introduction to NoSQL databases</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Introduction to NoSQL databases</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Appendix</span></p>
 <ul class="nav bd-sidenav">
@@ -239,7 +239,7 @@ const thebe_selector_output = ".output, .cell_output"
       
       
       
-      <li><a href="../_sources/notes/05-data-modeling.ipynb" target="_blank"
+      <li><a href="../_sources/notes/06-intro-to-nosql.ipynb" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -323,7 +323,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Data Modeling</h1>
+    <h1>Introduction to NoSQL databases</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -333,9 +333,13 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples-of-data-engineering-scenarios">Examples of data engineering scenarios</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#database-and-query">Database and query</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ex-electronic-medical-record"><span class="xref std std-ref">ex-electronic-medical-record</span></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-nosql">What is NoSQL</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-features-of-nosql">Key features of NoSQL</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cap-theorem">CAP Theorem</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#acid-and-base-properties">ACID and BASE properties</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#summary-table-from-aws-concepts">Summary table from AWS Concepts</a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -347,74 +351,124 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="data-modeling">
-<h1>Data Modeling<a class="headerlink" href="#data-modeling" title="Permalink to this heading">#</a></h1>
-<p>This set of notes introduces concepts of data modeling and the associated tools.</p>
-<p><em>Data modeling</em> is essentially … how you model the data, or how you perceive the data structure as presented in the real world.</p>
-<section id="examples-of-data-engineering-scenarios">
-<h2>Examples of data engineering scenarios<a class="headerlink" href="#examples-of-data-engineering-scenarios" title="Permalink to this heading">#</a></h2>
-<p><em>Online transaction processing (OLTP)</em></p>
-<ul class="simple">
-<li><p>Any transactions, literally</p></li>
-<li><p>e.g., retail, banking, texting</p></li>
-</ul>
-<p><em>Online analytics processing (OLAP)</em></p>
-<ul class="simple">
-<li><p>Interactive analytics <em>queries</em></p></li>
-<li><p>i.e., retrieve and aggregate data for information (or insight)</p></li>
-<li><p>e.g., airline delay (homework)</p></li>
-</ul>
-<p><em>Change data capture</em></p>
-<ul class="simple">
-<li><p>Snapshots, differential updates</p></li>
-<li><p>e.g., appointment scheduling</p></li>
-</ul>
-<figure class="align-default" id="mend-cheps">
-<a class="reference internal image-reference" href="../_images/mend-cheps.png"><img alt="../_images/mend-cheps.png" src="../_images/mend-cheps.png" style="width: 70%;" /></a>
+  <section class="tex2jax_ignore mathjax_ignore" id="introduction-to-nosql-databases">
+<h1>Introduction to NoSQL databases<a class="headerlink" href="#introduction-to-nosql-databases" title="Permalink to this heading">#</a></h1>
+<p>This document introduces the concept and usage of NoSQL databases.</p>
+<figure class="align-default" id="nosql">
+<a class="reference internal image-reference" href="../_images/nosql-geek-and-poke.jpg"><img alt="../_images/nosql-geek-and-poke.jpg" src="../_images/nosql-geek-and-poke.jpg" style="width: 70%;" /></a>
 <figcaption>
-<p><span class="caption-number">Fig. 6 </span><span class="caption-text">Average provider availability into the future.</span><a class="headerlink" href="#mend-cheps" title="Permalink to this image">#</a></p>
+<p><span class="caption-number">Fig. 7 </span><span class="caption-text">NoSQL comic <a class="reference external" href="https://geekandpoke.typepad.com/geekandpoke/2011/01/nosql.html">Geek and Poke</a></span><a class="headerlink" href="#nosql" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
-<p><em>Logs</em></p>
+<section id="what-is-nosql">
+<h2>What is NoSQL<a class="headerlink" href="#what-is-nosql" title="Permalink to this heading">#</a></h2>
+<p>The term NoSQL refers to a variety of database systems that <em>do not</em> follow all the rules in a relational (SQL) database system.</p>
+<p>NoSQL typically stands for <em>not only SQL</em> or non-relational.</p>
+<p>Examples of NoSQL systems:</p>
 <ul class="simple">
-<li><p>binary logs</p></li>
-<li><p>JSON</p></li>
-<li><p>Plain-text</p></li>
+<li><p>Apache Cassandra: commerce, recommandation systems</p></li>
+<li><p>MongoDB: text-based content</p></li>
+<li><p>Redis: queues, messaging</p></li>
 </ul>
+<p><em>Note:</em> Many of these systems can handle most of the applications listed.  Their <em>main</em> use case is listed.</p>
 </section>
-<section id="database-and-query">
-<h2>Database and query<a class="headerlink" href="#database-and-query" title="Permalink to this heading">#</a></h2>
-<p><em>Database</em> refers to a data storage system and a query engine.</p>
-<p><em>Query</em> refers to the avenue to retrieve and act on data.<br />
-Query commands generally include:</p>
+<section id="key-features-of-nosql">
+<h2>Key features of NoSQL<a class="headerlink" href="#key-features-of-nosql" title="Permalink to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>(Horizontal) scalability: distribute operations over many nodes</p></li>
+<li><p>Redundancy: replicate and distribute data over many nodes</p></li>
+<li><p>Flexibility:</p>
 <ul class="simple">
-<li><p>Data Definition Language, e.g., <code class="docutils literal notranslate"><span class="pre">CREATE</span></code>, <code class="docutils literal notranslate"><span class="pre">UPDATE</span></code>, <code class="docutils literal notranslate"><span class="pre">DROP</span></code></p></li>
-<li><p>Data Manipulation Language, e.g., <code class="docutils literal notranslate"><span class="pre">SELECT</span></code>, <code class="docutils literal notranslate"><span class="pre">INSERT</span></code>, <code class="docutils literal notranslate"><span class="pre">UPDATE</span></code>, <code class="docutils literal notranslate"><span class="pre">DELETE</span></code>, <code class="docutils literal notranslate"><span class="pre">COPY</span></code>, <code class="docutils literal notranslate"><span class="pre">MERGE</span></code></p></li>
-<li><p>Data Control Language, e.g., <code class="docutils literal notranslate"><span class="pre">GRANT</span></code>, <code class="docutils literal notranslate"><span class="pre">DENY</span></code>, <code class="docutils literal notranslate"><span class="pre">REVOKE</span></code></p></li>
-<li><p>Transaction Control Language, e.g., <code class="docutils literal notranslate"><span class="pre">COMMIT</span></code>, <code class="docutils literal notranslate"><span class="pre">ROLLBACK</span></code></p></li>
-</ul>
-<p>Several notes about queries:</p>
-<ul class="simple">
-<li><p>Complex queries incur higher computations.</p>
-<ul>
-<li><p><em>What is the goal?</em> Are we looking for a particular flight? or are we finding the number of flights that are delayed due to weather within date A and date B?</p></li>
+<li><p>looser restriction on concurrency than most relational database systems</p></li>
+<li><p>ability to add new features/attributes (columns) dynamically</p></li>
 </ul>
 </li>
-<li><p>Avoid large number of scans when possible.  Prepartitioning or pruning may be beneficial.</p></li>
-<li><p>Use <code class="docutils literal notranslate"><span class="pre">EXPLAIN</span></code> on a query for analysis.</p></li>
-<li><p>Use common table expressions, e.g.,</p></li>
+</ol>
+</section>
+<section id="cap-theorem">
+<h2>CAP Theorem<a class="headerlink" href="#cap-theorem" title="Permalink to this heading">#</a></h2>
+<p>The CAP theorem (<span id="id1">Fox and Brewer [<a class="reference internal" href="#id12" title="Armando Fox and Eric A Brewer. Harvest, yield, and scalable tolerant systems. In Proceedings of the Seventh Workshop on Hot Topics in Operating Systems, 174–178. IEEE, 1999.">1999</a>]</span>, <span id="id2">Brewer [<a class="reference internal" href="#id13" title="Eric Brewer. Cap twelve years later: how the&quot; rules&quot; have changed. Computer, 45(2):23–29, 2012.">2012</a>]</span>) describes the following performance properties of a system:</p>
+<ul class="simple">
+<li><p>consistency (C) equivalent to having a single up-to-date
+copy of the data;</p></li>
+<li><p>high availability (A) of that data (for updates); and</p></li>
+<li><p>tolerance to network partitions (P).</p></li>
 </ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">WITH</span>
-  <span class="n">cte1</span> <span class="n">AS</span> <span class="p">(</span><span class="n">SELECT</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="n">FROM</span> <span class="n">table1</span><span class="p">),</span>
-  <span class="n">cte2</span> <span class="n">AS</span> <span class="p">(</span><span class="n">SELECT</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span> <span class="n">FROM</span> <span class="n">table2</span><span class="p">)</span>
-<span class="n">SELECT</span> <span class="n">b</span><span class="p">,</span> <span class="n">d</span> <span class="n">FROM</span> <span class="n">cte1</span> <span class="n">JOIN</span> <span class="n">cte2</span>
-<span class="n">WHERE</span> <span class="n">cte1</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="n">cte2</span><span class="o">.</span><span class="n">c</span><span class="p">;</span>
-</pre></div>
+<p>On a high-level, a general system only satisfies <strong>two</strong> of the three properties.</p>
+<p><em>Note:</em> Tension spectra among the three properties.</p>
+</section>
+<section id="acid-and-base-properties">
+<h2>ACID and BASE properties<a class="headerlink" href="#acid-and-base-properties" title="Permalink to this heading">#</a></h2>
+<div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
+<div class="sd-row sd-g-2 sd-g-xs-2 sd-g-sm-2 sd-g-md-2 sd-g-lg-2 docutils">
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+ACID</div>
+<ul class="simple">
+<li><p class="sd-card-text">Atomicity: All operations in a single transaction succeed or fail together.</p></li>
+<li><p class="sd-card-text">Consistency: When multiple reads occur simultaneously, the data are consistent for all.</p></li>
+<li><p class="sd-card-text">Isolation: A new transaction waits until the previous transaction is complete.</p></li>
+<li><p class="sd-card-text">Durability: All committed records are maintained.</p></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+BASE</div>
+<ul class="simple">
+<li><p class="sd-card-text">Basically Available: Database is accessible at (almost) all times. One user does not wait for other transactions to complete before a read/update.</p></li>
+<li><p class="sd-card-text">Soft state: Temporary states of data may change (without external triggers). (e.g. social media post edit)</p></li>
+<li><p class="sd-card-text">Eventually consistent: A data record will become consistent when all concurrent updates are complete.</p></li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<section id="summary-table-from-aws-concepts">
+<h3>Summary table from <a class="reference external" href="https://aws.amazon.com/compare/the-difference-between-acid-and-base-database/">AWS Concepts</a><a class="headerlink" href="#summary-table-from-aws-concepts" title="Permalink to this heading">#</a></h3>
+<table class="colwidths-auto table">
+<thead>
+<tr class="row-odd"><th class="text-left head"><p></p></th>
+<th class="text-left head"><p>ACID</p></th>
+<th class="text-left head"><p>BASE</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>Scale</p></td>
+<td class="text-left"><p>Scales vertically.</p></td>
+<td class="text-left"><p>Scales horizontally.</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Flexibility</p></td>
+<td class="text-left"><p>Less flexible. Blocks specific records from other applications when processing.</p></td>
+<td class="text-left"><p>More flexible. Allows multiple applications to update the same record simultaneously.</p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p>Performance</p></td>
+<td class="text-left"><p>Performance decreases when processing large volumes of data.</p></td>
+<td class="text-left"><p>Capable of handling large, unstructured data with high throughput.</p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p>Synchronization</p></td>
+<td class="text-left"><p>Yes. Adds delay when synchronizing.</p></td>
+<td class="text-left"><p>No synchronization at the database level.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="docutils container" id="id3">
+<dl class="citation">
+<dt class="label" id="id13"><span class="brackets"><a class="fn-backref" href="#id2">Bre12</a></span></dt>
+<dd><p>Eric Brewer. Cap twelve years later: how the&quot; rules&quot; have changed. <em>Computer</em>, 45(2):23–29, 2012.</p>
+</dd>
+<dt class="label" id="id12"><span class="brackets"><a class="fn-backref" href="#id1">FB99</a></span></dt>
+<dd><p>Armando Fox and Eric A Brewer. Harvest, yield, and scalable tolerant systems. In <em>Proceedings of the Seventh Workshop on Hot Topics in Operating Systems</em>, 174–178. IEEE, 1999.</p>
+</dd>
+</dl>
 </div>
 </section>
-<section id="ex-electronic-medical-record">
-<h2><a class="reference internal" href="../examples/ex-electronic-medical-record.html#ex-electronic-medical-record"><span class="std std-ref">(EX) Electronic medical record</span></a><a class="headerlink" href="#ex-electronic-medical-record" title="Permalink to this heading">#</a></h2>
-<p><strong>References:</strong> Chapters 5 and 8 of <span id="id1">Reis and Housley [<a class="reference internal" href="../99-references.html#id2" title="Joe Reis and Matt Housley. Fundamentals of Data Engineering. O'Reilly Media, Inc., 2022.">2022</a>]</span> are excellent resources on this topic.</p>
 </section>
 </section>
 
@@ -449,20 +503,20 @@ Query commands generally include:</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="04-outlier.html"
+       href="../examples/ex-electronic-medical-record.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Handling outliers</p>
+        <p class="prev-next-title">(EX) Electronic medical record</p>
       </div>
     </a>
     <a class="right-next"
-       href="../examples/ex-electronic-medical-record.html"
+       href="0a-jupyter-ec2.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">(EX) Electronic medical record</p>
+        <p class="prev-next-title">Setting up EC2 instance for jupyter notebook</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -481,9 +535,13 @@ Query commands generally include:</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#examples-of-data-engineering-scenarios">Examples of data engineering scenarios</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#database-and-query">Database and query</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#ex-electronic-medical-record"><span class="xref std std-ref">ex-electronic-medical-record</span></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-nosql">What is NoSQL</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-features-of-nosql">Key features of NoSQL</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cap-theorem">CAP Theorem</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#acid-and-base-properties">ACID and BASE properties</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#summary-table-from-aws-concepts">Summary table from AWS Concepts</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 

@@ -65,7 +65,7 @@ const thebe_selector_output = ".output, .cell_output"
     <script>DOCUMENTATION_OPTIONS.pagename = 'examples/ex-electronic-medical-record';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Setting up EC2 instance for jupyter notebook" href="../notes/0a-jupyter-ec2.html" />
+    <link rel="next" title="Introduction to NoSQL databases" href="../notes/06-intro-to-nosql.html" />
     <link rel="prev" title="Data Modeling" href="../notes/05-data-modeling.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -179,6 +179,7 @@ const thebe_selector_output = ".output, .cell_output"
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../notes/05-data-modeling.html">Data Modeling</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">(EX) Electronic medical record</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notes/06-intro-to-nosql.html">Introduction to NoSQL databases</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Appendix</span></p>
 <ul class="nav bd-sidenav">
@@ -392,19 +393,39 @@ document.write(`
 <span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    SELECT column_name, data_type FROM information_schema.columns </span>
-<span class="sd">    WHERE table_name = &#39;ICDPROCS&#39;;</span>
+<span class="sd">    WHERE table_name = &#39;ADMISSIONS&#39;;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>┌─────────────┬───────────┐
-│ column_name │ data_type │
-│   varchar   │  varchar  │
-├─────────────────────────┤
-│         0 rows          │
-└─────────────────────────┘
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>┌──────────────────────┬───────────┐
+│     column_name      │ data_type │
+│       varchar        │  varchar  │
+├──────────────────────┼───────────┤
+│ row_id               │ INTEGER   │
+│ subject_id           │ INTEGER   │
+│ hadm_id              │ INTEGER   │
+│ admittime            │ VARCHAR   │
+│ dischtime            │ VARCHAR   │
+│ deathtime            │ VARCHAR   │
+│ admission_type       │ VARCHAR   │
+│ admission_location   │ VARCHAR   │
+│ discharge_location   │ VARCHAR   │
+│ insurance            │ VARCHAR   │
+│ language             │ VARCHAR   │
+│ religion             │ VARCHAR   │
+│ marital_status       │ VARCHAR   │
+│ ethnicity            │ VARCHAR   │
+│ edregtime            │ VARCHAR   │
+│ edouttime            │ VARCHAR   │
+│ diagnosis            │ VARCHAR   │
+│ hospital_expire_flag │ INTEGER   │
+│ has_chartevents_data │ INTEGER   │
+├──────────────────────┴───────────┤
+│ 19 rows                2 columns │
+└──────────────────────────────────┘
 </pre></div>
 </div>
 </div>
@@ -414,9 +435,43 @@ document.write(`
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># admission table at a glance</span>
 <span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    </span>
+<span class="sd">    SELECT * FROM ADMISSIONS;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>┌────────┬────────────┬─────────┬───┬──────────────────────┬──────────────────────┬──────────────────────┐
+│ row_id │ subject_id │ hadm_id │ … │      diagnosis       │ hospital_expire_flag │ has_chartevents_data │
+│ int32  │   int32    │  int32  │   │       varchar        │        int32         │        int32         │
+├────────┼────────────┼─────────┼───┼──────────────────────┼──────────────────────┼──────────────────────┤
+│  12258 │      10006 │  142345 │ … │ SEPSIS               │                    0 │                    1 │
+│  12263 │      10011 │  105331 │ … │ HEPATITIS B          │                    1 │                    1 │
+│  12265 │      10013 │  165520 │ … │ SEPSIS               │                    1 │                    1 │
+│  12269 │      10017 │  199207 │ … │ HUMERAL FRACTURE     │                    0 │                    1 │
+│  12270 │      10019 │  177759 │ … │ ALCOHOLIC HEPATITIS  │                    1 │                    1 │
+│  12277 │      10026 │  103770 │ … │ STROKE/TIA           │                    0 │                    1 │
+│  12278 │      10027 │  199395 │ … │  MITRAL REGURGITAT…  │                    0 │                    1 │
+│  12280 │      10029 │  132349 │ … │ SYNCOPE;TELEMETRY    │                    0 │                    1 │
+│  12282 │      10032 │  140372 │ … │ RIGHT HUMEROUS FRA…  │                    0 │                    1 │
+│  12283 │      10033 │  157235 │ … │ RENAL FAILIURE-SYN…  │                    0 │                    1 │
+│    ·   │        ·   │     ·   │ · │       ·              │                    · │                    · │
+│    ·   │        ·   │     ·   │ · │       ·              │                    · │                    · │
+│    ·   │        ·   │     ·   │ · │       ·              │                    · │                    · │
+│  40994 │      43881 │  167021 │ … │ UPPER GI BLEED       │                    0 │                    1 │
+│  40998 │      43909 │  167612 │ … │ PNEUMONIA;TELEMETRY  │                    1 │                    1 │
+│  41005 │      43927 │  110958 │ … │ CORONARY ARTERY DI…  │                    0 │                    1 │
+│  41053 │      44083 │  125157 │ … │ ESOPHAGEAL CA/SDA    │                    0 │                    1 │
+│  41054 │      44083 │  131048 │ … │ SHORTNESS OF BREATH  │                    0 │                    1 │
+│  41055 │      44083 │  198330 │ … │ PERICARDIAL EFFUSION │                    0 │                    1 │
+│  41070 │      44154 │  174245 │ … │ ALTERED MENTAL STA…  │                    1 │                    1 │
+│  41087 │      44212 │  163189 │ … │ ACUTE RESPIRATORY …  │                    0 │                    1 │
+│  41090 │      44222 │  192189 │ … │ BRADYCARDIA          │                    0 │                    1 │
+│  41092 │      44228 │  103379 │ … │ CHOLANGITIS          │                    0 │                    1 │
+├────────┴────────────┴─────────┴───┴──────────────────────┴──────────────────────┴──────────────────────┤
+│ 129 rows (20 shown)                                                               19 columns (6 shown) │
+└────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 </pre></div>
 </div>
 </div>
@@ -428,9 +483,19 @@ document.write(`
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># number of patients</span>
 <span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-
+<span class="sd">    SELECT COUNT(*) FROM PATIENTS;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>┌──────────────┐
+│ count_star() │
+│    int64     │
+├──────────────┤
+│          100 │
+└──────────────┘
 </pre></div>
 </div>
 </div>
@@ -440,9 +505,21 @@ document.write(`
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># number of patients by gender</span>
 <span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-
+<span class="sd">    SELECT COUNT(*), gender FROM PATIENTS</span>
+<span class="sd">    GROUP BY gender;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>┌──────────────┬─────────┐
+│ count_star() │ gender  │
+│    int64     │ varchar │
+├──────────────┼─────────┤
+│           55 │ F       │
+│           45 │ M       │
+└──────────────┴─────────┘
 </pre></div>
 </div>
 </div>
@@ -464,12 +541,50 @@ document.write(`
 <h2>Derivative queries<a class="headerlink" href="#derivative-queries" title="Permalink to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># calculate the age of each patient and include in the table above</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># calculate the age of each patient at the time of admission</span>
+<span class="c1"># cast(patients.dob as date) allows for addition and subtraction of dates</span>
 <span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-
+<span class="sd">    SELECT patients.subject_id, round((cast(admissions.admittime as date) - </span>
+<span class="sd">        cast(patients.dob as date))/365) as age1, </span>
+<span class="sd">    FROM patients</span>
+<span class="sd">    INNER JOIN admissions ON patients.subject_id = admissions.subject_id;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>┌────────────┬────────┐
+│ subject_id │  age1  │
+│   int32    │ double │
+├────────────┼────────┤
+│      10006 │   71.0 │
+│      10011 │   36.0 │
+│      10013 │   87.0 │
+│      10017 │   74.0 │
+│      10019 │   49.0 │
+│      10026 │  300.0 │
+│      10027 │   83.0 │
+│      10029 │   79.0 │
+│      10032 │   88.0 │
+│      10033 │   82.0 │
+│        ·   │     ·  │
+│        ·   │     ·  │
+│        ·   │     ·  │
+│      43881 │   54.0 │
+│      43909 │   79.0 │
+│      43927 │   72.0 │
+│      44083 │   55.0 │
+│      44083 │   55.0 │
+│      44083 │   55.0 │
+│      44154 │  300.0 │
+│      44212 │   45.0 │
+│      44222 │   73.0 │
+│      44228 │   58.0 │
+├────────────┴────────┤
+│ 129 rows (20 shown) │
+└─────────────────────┘
 </pre></div>
 </div>
 </div>
@@ -479,7 +594,7 @@ document.write(`
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># calculate the duration of admission before each patient is admitted to the ICU</span>
 <span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-
+<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <span class="p">)</span>
 </pre></div>
@@ -491,7 +606,7 @@ document.write(`
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># identify if a patient passes away when they are in the ICU</span>
 <span class="n">conn</span><span class="o">.</span><span class="n">sql</span><span class="p">(</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-
+<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <span class="p">)</span>
 </pre></div>
@@ -647,11 +762,11 @@ document.write(`
       </div>
     </a>
     <a class="right-next"
-       href="../notes/0a-jupyter-ec2.html"
+       href="../notes/06-intro-to-nosql.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Setting up EC2 instance for jupyter notebook</p>
+        <p class="prev-next-title">Introduction to NoSQL databases</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
