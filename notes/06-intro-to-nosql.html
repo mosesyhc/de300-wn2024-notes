@@ -65,7 +65,7 @@ const thebe_selector_output = ".output, .cell_output"
     <script>DOCUMENTATION_OPTIONS.pagename = 'notes/06-intro-to-nosql';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Setting up EC2 instance for jupyter notebook" href="0a-jupyter-ec2.html" />
+    <link rel="next" title="Wide-column database system (Apache Cassandra)" href="07-cassandra.html" />
     <link rel="prev" title="(EX) Electronic medical record" href="../examples/ex-electronic-medical-record.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -180,6 +180,7 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l1"><a class="reference internal" href="05-data-modeling.html">Data Modeling</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../examples/ex-electronic-medical-record.html">(EX) Electronic medical record</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Introduction to NoSQL databases</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07-cassandra.html">Wide-column database system (Apache Cassandra)</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Appendix</span></p>
 <ul class="nav bd-sidenav">
@@ -340,6 +341,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#summary-table-from-aws-concepts">Summary table from AWS Concepts</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#main-forms-of-nosql-database-systems-ch-5-reis2022fundamentals">Main forms of NoSQL database systems [ch.5, <span class="xref cite cite-t">reis2022fundamentals</span>]</a></li>
 </ul>
             </nav>
         </div>
@@ -387,7 +389,7 @@ document.write(`
 </section>
 <section id="cap-theorem">
 <h2>CAP Theorem<a class="headerlink" href="#cap-theorem" title="Permalink to this heading">#</a></h2>
-<p>The CAP theorem (<span id="id1">Fox and Brewer [<a class="reference internal" href="#id12" title="Armando Fox and Eric A Brewer. Harvest, yield, and scalable tolerant systems. In Proceedings of the Seventh Workshop on Hot Topics in Operating Systems, 174–178. IEEE, 1999.">1999</a>]</span>, <span id="id2">Brewer [<a class="reference internal" href="#id13" title="Eric Brewer. Cap twelve years later: how the&quot; rules&quot; have changed. Computer, 45(2):23–29, 2012.">2012</a>]</span>) describes the following performance properties of a system:</p>
+<p>The CAP theorem (<span id="id1">Fox and Brewer [<a class="reference internal" href="#id13" title="Armando Fox and Eric A Brewer. Harvest, yield, and scalable tolerant systems. In Proceedings of the Seventh Workshop on Hot Topics in Operating Systems, 174–178. IEEE, 1999.">1999</a>]</span>, <span id="id2">Brewer [<a class="reference internal" href="#id14" title="Eric Brewer. Cap twelve years later: how the&quot; rules&quot; have changed. Computer, 45(2):23–29, 2012.">2012</a>]</span>) describes the following performance properties of a system:</p>
 <ul class="simple">
 <li><p>consistency (C) equivalent to having a single up-to-date
 copy of the data;</p></li>
@@ -458,17 +460,50 @@ BASE</div>
 </tr>
 </tbody>
 </table>
-<div class="docutils container" id="id3">
+</section>
+</section>
+<section id="main-forms-of-nosql-database-systems-ch-5-reis2022fundamentals">
+<h2>Main forms of NoSQL database systems [ch.5, <span id="id3">Reis and Housley [<a class="reference internal" href="#id5" title="Joe Reis and Matt Housley. Fundamentals of Data Engineering. O'Reilly Media, Inc., 2022.">2022</a>]</span>]<a class="headerlink" href="#main-forms-of-nosql-database-systems-ch-5-reis2022fundamentals" title="Permalink to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>Document databases</p>
+<ul class="simple">
+<li><p>Storing data in JSON-like documents.</p></li>
+<li><p>e.g., MongoDB and Couchbase.</p></li>
+</ul>
+</li>
+<li><p>Key-value stores</p>
+<ul class="simple">
+<li><p>Storing data as a collection of key-value pairs.</p></li>
+<li><p>e.g., Redis and DynamoDB.</p></li>
+</ul>
+</li>
+<li><p>Graph databases</p>
+<ul class="simple">
+<li><p>Storing data as vertices and edges.</p></li>
+<li><p>e.g., Neo4j and Amazon Neptune.</p></li>
+</ul>
+</li>
+<li><p><strong>Column-family (wide-column) stores</strong></p>
+<ul class="simple">
+<li><p>Storing data in columns rather than rows</p></li>
+<li><p>Scalable data storage.</p></li>
+<li><p>e.g., Apache Cassandra and ScyllaDB.</p></li>
+</ul>
+</li>
+</ol>
+<div class="docutils container" id="id4">
 <dl class="citation">
-<dt class="label" id="id13"><span class="brackets"><a class="fn-backref" href="#id2">Bre12</a></span></dt>
+<dt class="label" id="id14"><span class="brackets"><a class="fn-backref" href="#id2">Bre12</a></span></dt>
 <dd><p>Eric Brewer. Cap twelve years later: how the&quot; rules&quot; have changed. <em>Computer</em>, 45(2):23–29, 2012.</p>
 </dd>
-<dt class="label" id="id12"><span class="brackets"><a class="fn-backref" href="#id1">FB99</a></span></dt>
+<dt class="label" id="id13"><span class="brackets"><a class="fn-backref" href="#id1">FB99</a></span></dt>
 <dd><p>Armando Fox and Eric A Brewer. Harvest, yield, and scalable tolerant systems. In <em>Proceedings of the Seventh Workshop on Hot Topics in Operating Systems</em>, 174–178. IEEE, 1999.</p>
+</dd>
+<dt class="label" id="id5"><span class="brackets"><a class="fn-backref" href="#id3">RH22</a></span></dt>
+<dd><p>Joe Reis and Matt Housley. <em>Fundamentals of Data Engineering</em>. O'Reilly Media, Inc., 2022.</p>
 </dd>
 </dl>
 </div>
-</section>
 </section>
 </section>
 
@@ -512,11 +547,11 @@ BASE</div>
       </div>
     </a>
     <a class="right-next"
-       href="0a-jupyter-ec2.html"
+       href="07-cassandra.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Setting up EC2 instance for jupyter notebook</p>
+        <p class="prev-next-title">Wide-column database system (Apache Cassandra)</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -542,6 +577,7 @@ BASE</div>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#summary-table-from-aws-concepts">Summary table from AWS Concepts</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#main-forms-of-nosql-database-systems-ch-5-reis2022fundamentals">Main forms of NoSQL database systems [ch.5, <span class="xref cite cite-t">reis2022fundamentals</span>]</a></li>
 </ul>
   </nav></div>
 

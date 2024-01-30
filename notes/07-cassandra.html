@@ -1,0 +1,659 @@
+
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Wide-column database system (Apache Cassandra) &#8212; DATA_ENG 300 Data Engineering Studio</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" href="../_static/styles/sphinx-book-theme.css?digest=14f4ca6b54d191a8c7657f6c759bf11a5fb86285" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?digest=5a5c038af52cf7bc1a1ec88eea08e6366ee68824"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"
+const thebe_selector = ".thebe,.cell"
+const thebe_selector_input = "pre"
+const thebe_selector_output = ".output, .cell_output"
+</script>
+    <script async="async" src="../_static/sphinx-thebe.js"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notes/07-cassandra';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Setting up EC2 instance for jupyter notebook" href="0a-jupyter-ec2.html" />
+    <link rel="prev" title="Introduction to NoSQL databases" href="06-intro-to-nosql.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+
+<a class="navbar-brand logo" href="../00-syllabus.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">DATA_ENG 300 Data Engineering Studio</p>
+  
+</a></div>
+        <div class="sidebar-primary-item"><nav class="bd-links" id="bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="../00-syllabus.html">
+                    DATA_ENG 300: Data Engineering Studio
+                </a>
+            </li>
+        </ul>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Introduction to data engineering</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01-intro-data-engineering.html">Introduction to Data Engineering</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/ex-hospital-readmission.html">(EX) Hospital readmission</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Exploratory data analysis</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="02-exploratory-data-analysis.html">Exploratory Data Analysis</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="03-missing-data.html">Handling missing data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/ex-recommendations.html">(EX) Recommendation system with alternating least squares algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04-outlier.html">Handling outliers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Data modeling</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="05-data-modeling.html">Data Modeling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/ex-electronic-medical-record.html">(EX) Electronic medical record</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06-intro-to-nosql.html">Introduction to NoSQL databases</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Wide-column database system (Apache Cassandra)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Appendix</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="0a-jupyter-ec2.html">Setting up EC2 instance for jupyter notebook</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../99-references.html">References</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><label class="sidebar-toggle primary-toggle btn btn-sm" for="__primary" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</label></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notes/07-cassandra.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<label class="sidebar-toggle secondary-toggle btn btn-sm" for="__secondary"title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</label>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Wide-column database system (Apache Cassandra)</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#an-abridged-version-of-the-cassandra-timeline">An abridged version of the Cassandra timeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#architecture-of-cassandra">Architecture of Cassandra</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#decentralized-multiple-nodes">Decentralized multiple nodes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#partitions">Partitions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#replication">Replication</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#consistency">Consistency</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pre-sorting">Pre-sorting</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#main-take-aways">Main take-aways</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="wide-column-database-system-apache-cassandra">
+<h1>Wide-column database system (Apache Cassandra)<a class="headerlink" href="#wide-column-database-system-apache-cassandra" title="Permalink to this heading">#</a></h1>
+<p>This document covers the wide-column database system, with Cassandra queries that are used via AWS Keyspaces.</p>
+<section id="an-abridged-version-of-the-cassandra-timeline">
+<h2>An abridged version of the Cassandra timeline<a class="headerlink" href="#an-abridged-version-of-the-cassandra-timeline" title="Permalink to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>2008</strong>: First developed to address Facebook scaling needs by improving search function.</p></li>
+<li><p><strong>2008</strong>: Released by Facebook as an open-source project.</p></li>
+<li><p><strong>2009</strong>: Apache picked up Cassandra as an Incubator project, and graduated in 2010.</p></li>
+<li><p><strong>2011</strong>: Cassandra Query Language (CQL) is introduced (v0.8).</p></li>
+<li><p><strong>2021</strong>: Cassandra 4.0 was released.  In <a class="reference external" href="https://datastax.medium.com/the-end-of-the-beginning-for-apache-cassandra-f58b5b4b7504">Patrick McFadin’s own words</a>,</p></li>
+</ul>
+<blockquote>
+<div><p>This is an important milestone in the lifecycle of a database project that has come into its own as an important database used around the world.</p>
+</div></blockquote>
+</section>
+<section id="architecture-of-cassandra">
+<h2>Architecture of Cassandra<a class="headerlink" href="#architecture-of-cassandra" title="Permalink to this heading">#</a></h2>
+<figure class="align-default" id="cassandra-ring">
+<a class="reference internal image-reference" href="../_images/apache-cassandra-ring.jpg"><img alt="../_images/apache-cassandra-ring.jpg" src="../_images/apache-cassandra-ring.jpg" style="width: 70%;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 8 </span><span class="caption-text">Apache Cassandra distributed database schema.</span><a class="headerlink" href="#cassandra-ring" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+<section id="decentralized-multiple-nodes">
+<h3>Decentralized multiple nodes<a class="headerlink" href="#decentralized-multiple-nodes" title="Permalink to this heading">#</a></h3>
+<p>Each node can receive request (query) and coordinates the request</p>
+<ul class="simple">
+<li><p>If the coordinator node contains the data, it may return the results.</p></li>
+<li><p>If the coordinator node does not contain the data, it can calculate which other node does (via a <em>consistent hashing algorithm</em>).</p></li>
+<li><p>If consistency level is requested, the coordinator node queries the data from replica nodes.</p></li>
+</ul>
+</section>
+<section id="partitions">
+<h3>Partitions<a class="headerlink" href="#partitions" title="Permalink to this heading">#</a></h3>
+<p><em>Recall</em> what a primary key is in a relational database table.</p>
+<p>Cassandra calls the main entity a <em>Keyspace</em>, as a group of tables with some relationships (<em>analogous to database in a relational database system</em>).</p>
+<p>The primary key in a Cassandra table consists of</p>
+<ul class="simple">
+<li><p>a mandatory <strong>partition key</strong>, and</p></li>
+<li><p>an optional set of <strong>clustering columns</strong>.</p></li>
+</ul>
+<p>Example adapted from <a class="reference external" href="http://www.freecodecamp.org">www.freecodecamp.org</a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">CREATE</span> <span class="n">TABLE</span> <span class="n">de300keyspaces</span><span class="o">.</span><span class="n">users_by_country</span> <span class="p">(</span>
+<span class="go">    country text,</span>
+<span class="go">    user_email text,</span>
+<span class="go">    first_name text,</span>
+<span class="go">    last_name text,</span>
+<span class="go">    age smallint,</span>
+<span class="go">    PRIMARY KEY ((country), user_email)</span>
+<span class="go">);</span>
+
+<span class="go">Table Users | Legend: p - Partition-Key, c - Clustering Column</span>
+
+<span class="go">country (p) | user_email (c)  | first_name | last_name | age</span>
+<span class="go">----------------------------------------------------------------</span>
+<span class="go">US          | john@email.com  | John       | Wick      | 55  </span>
+<span class="go">UK          | peter@email.com | Peter      | Clark     | 65  </span>
+<span class="go">UK          | bob@email.com   | Bob        | Sandler   | 23 </span>
+<span class="go">UK          | alice@email.com | Alice      | Brown     | 26</span>
+</pre></div>
+</div>
+<p><strong>Why use country as the mandatory key?</strong></p>
+<ul class="simple">
+<li><p>The most important bit to understanding is <em>scalability</em>.</p></li>
+<li><p><em>If</em> we often query the user database for specific countries, this may be a good idea.</p></li>
+</ul>
+<figure class="align-default" id="partition-key">
+<a class="reference internal image-reference" href="../_images/partition-key.png"><img alt="../_images/partition-key.png" src="../_images/partition-key.png" style="width: 70%;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 9 </span><span class="caption-text">Illstration for partition key.</span><a class="headerlink" href="#partition-key" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+<p>The main role of the <strong>partition key</strong> is to distribute data evenly among nodes.</p>
+<p>An example query that will work really efficiently is the following:<br />
+<code class="docutils literal notranslate"><span class="pre">&gt;&gt;&gt;</span> <span class="pre">SELECT</span> <span class="pre">*</span> <span class="pre">FROM</span> <span class="pre">de300keyspaces.users_by_country</span> <span class="pre">WHERE</span> <span class="pre">country='US';</span></code></p>
+<p>An example query that will work poorly would be the following:<br />
+<code class="docutils literal notranslate"><span class="pre">&gt;&gt;&gt;</span> <span class="pre">SELECT</span> <span class="pre">*</span> <span class="pre">FROM</span> <span class="pre">de300keyspaces.users_by_country</span> <span class="pre">WHERE</span> <span class="pre">age</span> <span class="pre">&gt;</span> <span class="pre">50;</span></code></p>
+<p>In fact, the query above will not run.  Queries without conditions (<code class="docutils literal notranslate"><span class="pre">WHERE</span></code>) or use conditions that don’t use the partition key should be avoided.</p>
+<p><em>With caution:</em> You may force this kind of query to run with the following:<br />
+<code class="docutils literal notranslate"><span class="pre">&gt;&gt;&gt;</span> <span class="pre">SELECT</span> <span class="pre">*</span> <span class="pre">FROM</span> <span class="pre">de300keyspaces.users_by_country</span> <span class="pre">WHERE</span> <span class="pre">age</span> <span class="pre">&gt;</span> <span class="pre">50</span> <span class="pre">ALLOW</span> <span class="pre">FILTERING;</span></code></p>
+</section>
+<section id="replication">
+<h3>Replication<a class="headerlink" href="#replication" title="Permalink to this heading">#</a></h3>
+<p>Data are duplicated and stored in different nodes (replicas).  By default, a replication of three “availability zones” is supported in AWS Keyspace.</p>
+<p>When a keyspace is created, a query such as the following requires specifying a replication factor.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># AWS Keyspace</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">CREATE</span> <span class="n">KEYSPAC</span> <span class="n">IF</span> <span class="n">NOT</span> <span class="n">EXISTS</span> <span class="s2">&quot;de300keyspaces&quot;</span>
+  <span class="n">WITH</span> <span class="n">REPLICATION</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;SingleRegionStrategy&#39;</span><span class="p">};</span>
+
+<span class="c1"># General Cassandra</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">CREATE</span> <span class="n">KEYSPACE</span> <span class="n">de300keyspaces</span>  
+  <span class="n">WITH</span> <span class="n">REPLICATION</span> <span class="o">=</span> <span class="p">{</span> 
+   <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span>
+   <span class="s1">&#39;datacenter1&#39;</span> <span class="p">:</span> <span class="mi">3</span> 
+  <span class="p">};</span>
+</pre></div>
+</div>
+<p>A <strong>replication factor</strong> of 3 means that for each row of data, there are three copies stored on different nodes.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">CONSISTENCY</span> <span class="n">ONE</span><span class="p">;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">CONSISTENCY</span> <span class="n">LOCAL_ONE</span><span class="p">;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">CONSISTENCY</span> <span class="n">LOCAL_QUORUM</span><span class="p">;</span>
+</pre></div>
+</div>
+<p>Note: Strong consistency means $<span class="math notranslate nohighlight">\([\textrm{read-consistency-level}] + [\textrm{write-consistency-level}] &gt; [\textrm{replication-factor}].\)</span>$</p>
+</section>
+<section id="consistency">
+<h3>Consistency<a class="headerlink" href="#consistency" title="Permalink to this heading">#</a></h3>
+<p>Once we have replicates, the notion of consistency beceomes important.  As we have seen before, <em>strong consistency</em> means only one state of your data can be observed at any time in any location.
+Cassandra generally runs an <em>eventually consistent</em> model.</p>
+<p><em>The biggest question is how important strong consistency in your use case.</em></p>
+<p><strong>Read/Write consistency level</strong> means how many of the read/write operations (replica) are completed.</p>
+<p>Consistency for all queries can be set by the following query examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">CONSISTENCY</span> <span class="n">ONE</span><span class="p">;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">CONSISTENCY</span> <span class="n">LOCAL_QUORUM</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="pre-sorting">
+<h3>Pre-sorting<a class="headerlink" href="#pre-sorting" title="Permalink to this heading">#</a></h3>
+<p>Recalling that the primary key consists of</p>
+<ul class="simple">
+<li><p>a mandatory partition key (1+ columns), and</p></li>
+<li><p>an optional set of clustering columns (0+ columns).</p></li>
+</ul>
+<p>Cassandra sorts the  data by default.  Using the same example from above:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">CREATE</span> <span class="n">TABLE</span> <span class="n">de300keyspaces</span><span class="o">.</span><span class="n">users_by_country_sorted_by_age_asc</span> <span class="p">(</span>
+<span class="go">    country text,</span>
+<span class="go">    user_email text,</span>
+<span class="go">    first_name text,</span>
+<span class="go">    last_name text,</span>
+<span class="go">    age smallint,</span>
+<span class="go">    PRIMARY KEY ((country), age, user_email)</span>
+<span class="go">) WITH CLUSTERING ORDER BY (age ASC);</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">SELECT</span> <span class="o">*</span> <span class="n">FROM</span> <span class="n">de300keyspaces</span><span class="o">.</span><span class="n">users_by_country_sorted_by_age_asc</span> <span class="n">WHERE</span> <span class="n">country</span><span class="o">=</span><span class="s1">&#39;UK&#39;</span><span class="p">;</span>
+
+<span class="go"> country | age | user_email       | first_name | last_name</span>
+<span class="go">---------+-----+------------------+------------+-----------</span>
+<span class="go">      UK |  20 | bob@email.com   |        Bob |   Sandler</span>
+<span class="go">      UK |  30 | peter@email.com |      Peter |     Clark</span>
+<span class="go">      UK |  40 | alice@email.com |      Alice |    Brown</span>
+
+</pre></div>
+</div>
+<p>Notice that age is included as a clustering column, and sorted.</p>
+<p>The <strong>order</strong> of your clustering columns matters!</p>
+<p>It is now possible to query the table by</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">country</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">country</span></code>, <code class="docutils literal notranslate"><span class="pre">age</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">country</span></code>, <code class="docutils literal notranslate"><span class="pre">age</span></code>, <code class="docutils literal notranslate"><span class="pre">user_email</span></code></p></li>
+</ul>
+<p>But querying by <code class="docutils literal notranslate"><span class="pre">country</span></code> and <code class="docutils literal notranslate"><span class="pre">user_email</span></code> becomes inefficient.</p>
+</section>
+<section id="main-take-aways">
+<h3>Main take-aways<a class="headerlink" href="#main-take-aways" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>The strength of Cassandra is in horizontal scalability, balancing consistency and availability.</p></li>
+<li><p>Implication:</p>
+<ul>
+<li><p>No <code class="docutils literal notranslate"><span class="pre">JOIN</span></code> statements</p></li>
+<li><p>No nested query, subquery</p></li>
+<li><p>Tables are designed for queries, not the other way around.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notes"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="06-intro-to-nosql.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Introduction to NoSQL databases</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="0a-jupyter-ec2.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Setting up EC2 instance for jupyter notebook</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#an-abridged-version-of-the-cassandra-timeline">An abridged version of the Cassandra timeline</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#architecture-of-cassandra">Architecture of Cassandra</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#decentralized-multiple-nodes">Decentralized multiple nodes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#partitions">Partitions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#replication">Replication</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#consistency">Consistency</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pre-sorting">Pre-sorting</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#main-take-aways">Main take-aways</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Moses Y.-H. Chan
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2022.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
