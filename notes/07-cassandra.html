@@ -343,6 +343,8 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#replication">Replication</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#consistency">Consistency</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pre-sorting">Pre-sorting</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#deletion-of-data">Deletion of data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#node-failure-detection">Node failure detection</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#main-take-aways">Main take-aways</a></li>
 </ul>
 </li>
@@ -389,6 +391,21 @@ document.write(`
 <li><p>If the coordinator node does not contain the data, it can calculate which other node does (via a <em>consistent hashing algorithm</em>).</p></li>
 <li><p>If consistency level is requested, the coordinator node queries the data from replica nodes.</p></li>
 </ul>
+<p>A note about the hashing algorithm:</p>
+<ul class="simple">
+<li><p>Data are assigned to nodes by a hash function to calculate a <em>token</em> for the partition key.</p></li>
+<li><p>Each node owns a range of the tokens.</p></li>
+</ul>
+<p>Example through the following query:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">SELECT</span><span class="w"> </span><span class="n">subject_id</span><span class="p">,</span><span class="w"> </span><span class="n">token</span><span class="p">(</span><span class="n">subject_id</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">de300_demo</span><span class="p">.</span><span class="n">patient_tbl</span><span class="p">;</span>
+</pre></div>
+</div>
+<figure class="align-default" id="token-ring">
+<a class="reference internal image-reference" href="../_images/token_ring.png"><img alt="../_images/token_ring.png" src="../_images/token_ring.png" style="width: 70%;" /></a>
+<figcaption>
+<p><span class="caption-number">Fig. 9 </span><span class="caption-text">Token ring (Fig 6.2 from <span id="id1">Carpenter and Hewitt [<a class="reference internal" href="../99-references.html#id12" title="Jeff Carpenter and Eben Hewitt. Cassandra: The Definitive Guide,(Revised). &quot; O'Reilly Media, Inc.&quot;, 2022.">2022</a>]</span>).</span><a class="headerlink" href="#token-ring" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
 </section>
 <section id="partitions">
 <h3>Partitions<a class="headerlink" href="#partitions" title="Permalink to this heading">#</a></h3>
@@ -400,23 +417,23 @@ document.write(`
 <li><p>an optional set of <strong>clustering columns</strong>.</p></li>
 </ul>
 <p>Example adapted from <a class="reference external" href="http://www.freecodecamp.org">www.freecodecamp.org</a>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">CREATE</span> <span class="n">TABLE</span> <span class="n">de300keyspaces</span><span class="o">.</span><span class="n">users_by_country</span> <span class="p">(</span>
-<span class="go">    country text,</span>
-<span class="go">    user_email text,</span>
-<span class="go">    first_name text,</span>
-<span class="go">    last_name text,</span>
-<span class="go">    age smallint,</span>
-<span class="go">    PRIMARY KEY ((country), user_email)</span>
-<span class="go">);</span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">de300keyspaces</span><span class="p">.</span><span class="n">users_by_country</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">country</span><span class="w"> </span><span class="nb">text</span><span class="p">,</span>
+<span class="w">    </span><span class="n">user_email</span><span class="w"> </span><span class="nb">text</span><span class="p">,</span>
+<span class="w">    </span><span class="n">first_name</span><span class="w"> </span><span class="nb">text</span><span class="p">,</span>
+<span class="w">    </span><span class="n">last_name</span><span class="w"> </span><span class="nb">text</span><span class="p">,</span>
+<span class="w">    </span><span class="n">age</span><span class="w"> </span><span class="nb">smallint</span><span class="p">,</span>
+<span class="w">    </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">((</span><span class="n">country</span><span class="p">),</span><span class="w"> </span><span class="n">user_email</span><span class="p">)</span>
+<span class="p">);</span>
 
-<span class="go">Table Users | Legend: p - Partition-Key, c - Clustering Column</span>
+<span class="k">Table</span><span class="w"> </span><span class="n">Users</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Legend</span><span class="p">:</span><span class="w"> </span><span class="n">p</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Partition</span><span class="o">-</span><span class="k">Key</span><span class="p">,</span><span class="w"> </span><span class="k">c</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Clustering</span><span class="w"> </span><span class="k">Column</span>
 
-<span class="go">country (p) | user_email (c)  | first_name | last_name | age</span>
-<span class="go">----------------------------------------------------------------</span>
-<span class="go">US          | john@email.com  | John       | Wick      | 55  </span>
-<span class="go">UK          | peter@email.com | Peter      | Clark     | 65  </span>
-<span class="go">UK          | bob@email.com   | Bob        | Sandler   | 23 </span>
-<span class="go">UK          | alice@email.com | Alice      | Brown     | 26</span>
+<span class="n">country</span><span class="w"> </span><span class="p">(</span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">user_email</span><span class="w"> </span><span class="p">(</span><span class="k">c</span><span class="p">)</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">first_name</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">last_name</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">age</span>
+<span class="c1">----------------------------------------------------------------</span>
+<span class="n">US</span><span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="n">john</span><span class="o">@</span><span class="n">email</span><span class="p">.</span><span class="n">com</span><span class="w">  </span><span class="o">|</span><span class="w"> </span><span class="n">John</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">Wick</span><span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="mi">55</span><span class="w">  </span>
+<span class="n">UK</span><span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="n">peter</span><span class="o">@</span><span class="n">email</span><span class="p">.</span><span class="n">com</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Peter</span><span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="n">Clark</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="mi">65</span><span class="w">  </span>
+<span class="n">UK</span><span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="n">bob</span><span class="o">@</span><span class="n">email</span><span class="p">.</span><span class="n">com</span><span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="n">Bob</span><span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="n">Sandler</span><span class="w">   </span><span class="o">|</span><span class="w"> </span><span class="mi">23</span><span class="w"> </span>
+<span class="n">UK</span><span class="w">          </span><span class="o">|</span><span class="w"> </span><span class="n">alice</span><span class="o">@</span><span class="n">email</span><span class="p">.</span><span class="n">com</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Alice</span><span class="w">      </span><span class="o">|</span><span class="w"> </span><span class="n">Brown</span><span class="w">     </span><span class="o">|</span><span class="w"> </span><span class="mi">26</span>
 </pre></div>
 </div>
 <p><strong>Why use country as the mandatory key?</strong></p>
@@ -427,7 +444,7 @@ document.write(`
 <figure class="align-default" id="partition-key">
 <a class="reference internal image-reference" href="../_images/partition-key.png"><img alt="../_images/partition-key.png" src="../_images/partition-key.png" style="width: 70%;" /></a>
 <figcaption>
-<p><span class="caption-number">Fig. 9 </span><span class="caption-text">Illstration for partition key.</span><a class="headerlink" href="#partition-key" title="Permalink to this image">#</a></p>
+<p><span class="caption-number">Fig. 10 </span><span class="caption-text">Illstration for partition key.</span><a class="headerlink" href="#partition-key" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
 <p>The main role of the <strong>partition key</strong> is to distribute data evenly among nodes.</p>
@@ -443,16 +460,16 @@ document.write(`
 <h3>Replication<a class="headerlink" href="#replication" title="Permalink to this heading">#</a></h3>
 <p>Data are duplicated and stored in different nodes (replicas).  By default, a replication of three “availability zones” is supported in AWS Keyspace.</p>
 <p>When a keyspace is created, a query such as the following requires specifying a replication factor.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># AWS Keyspace</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">CREATE</span> <span class="n">KEYSPAC</span> <span class="n">IF</span> <span class="n">NOT</span> <span class="n">EXISTS</span> <span class="s2">&quot;de300keyspaces&quot;</span>
-  <span class="n">WITH</span> <span class="n">REPLICATION</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;class&#39;</span><span class="p">:</span> <span class="s1">&#39;SingleRegionStrategy&#39;</span><span class="p">};</span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span># AWS Keyspace
+&gt;&gt;&gt; CREATE KEYSPAC IF NOT EXISTS &quot;de300keyspaces&quot;
+  WITH REPLICATION = {&#39;class&#39;: &#39;SingleRegionStrategy&#39;};
 
-<span class="c1"># General Cassandra</span>
-<span class="o">&gt;&gt;&gt;</span> <span class="n">CREATE</span> <span class="n">KEYSPACE</span> <span class="n">de300keyspaces</span>  
-  <span class="n">WITH</span> <span class="n">REPLICATION</span> <span class="o">=</span> <span class="p">{</span> 
-   <span class="s1">&#39;class&#39;</span> <span class="p">:</span> <span class="s1">&#39;NetworkTopologyStrategy&#39;</span><span class="p">,</span>
-   <span class="s1">&#39;datacenter1&#39;</span> <span class="p">:</span> <span class="mi">3</span> 
-  <span class="p">};</span>
+# General Cassandra
+&gt;&gt;&gt; CREATE KEYSPACE de300keyspaces  
+  WITH REPLICATION = { 
+   &#39;class&#39; : &#39;NetworkTopologyStrategy&#39;,
+   &#39;datacenter1&#39; : 3 
+  };
 </pre></div>
 </div>
 <p>A <strong>replication factor</strong> of 3 means that for each row of data, there are three copies stored on different nodes.</p>
@@ -470,8 +487,8 @@ Cassandra generally runs an <em>eventually consistent</em> model.</p>
 <p><em>The biggest question is how important strong consistency in your use case.</em></p>
 <p><strong>Read/Write consistency level</strong> means how many of the read/write operations (replica) are completed.</p>
 <p>Consistency for all queries can be set by the following query examples:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">CONSISTENCY</span> <span class="n">ONE</span><span class="p">;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">CONSISTENCY</span> <span class="n">LOCAL_QUORUM</span><span class="p">;</span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">CONSISTENCY</span><span class="w"> </span><span class="n">ONE</span><span class="p">;</span>
+<span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">CONSISTENCY</span><span class="w"> </span><span class="n">LOCAL_QUORUM</span><span class="p">;</span>
 </pre></div>
 </div>
 </section>
@@ -483,24 +500,23 @@ Cassandra generally runs an <em>eventually consistent</em> model.</p>
 <li><p>an optional set of clustering columns (0+ columns).</p></li>
 </ul>
 <p>Cassandra sorts the  data by default.  Using the same example from above:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">CREATE</span> <span class="n">TABLE</span> <span class="n">de300keyspaces</span><span class="o">.</span><span class="n">users_by_country_sorted_by_age_asc</span> <span class="p">(</span>
-<span class="go">    country text,</span>
-<span class="go">    user_email text,</span>
-<span class="go">    first_name text,</span>
-<span class="go">    last_name text,</span>
-<span class="go">    age smallint,</span>
-<span class="go">    PRIMARY KEY ((country), age, user_email)</span>
-<span class="go">) WITH CLUSTERING ORDER BY (age ASC);</span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">de300keyspaces</span><span class="p">.</span><span class="n">users_by_country_sorted_by_age_asc</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">country</span><span class="w"> </span><span class="nb">text</span><span class="p">,</span>
+<span class="w">    </span><span class="n">user_email</span><span class="w"> </span><span class="nb">text</span><span class="p">,</span>
+<span class="w">    </span><span class="n">first_name</span><span class="w"> </span><span class="nb">text</span><span class="p">,</span>
+<span class="w">    </span><span class="n">last_name</span><span class="w"> </span><span class="nb">text</span><span class="p">,</span>
+<span class="w">    </span><span class="n">age</span><span class="w"> </span><span class="nb">smallint</span><span class="p">,</span>
+<span class="w">    </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="p">((</span><span class="n">country</span><span class="p">),</span><span class="w"> </span><span class="n">age</span><span class="p">,</span><span class="w"> </span><span class="n">user_email</span><span class="p">)</span>
+<span class="p">)</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="n">CLUSTERING</span><span class="w"> </span><span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="p">(</span><span class="n">age</span><span class="w"> </span><span class="k">ASC</span><span class="p">);</span>
 </pre></div>
 </div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">SELECT</span> <span class="o">*</span> <span class="n">FROM</span> <span class="n">de300keyspaces</span><span class="o">.</span><span class="n">users_by_country_sorted_by_age_asc</span> <span class="n">WHERE</span> <span class="n">country</span><span class="o">=</span><span class="s1">&#39;UK&#39;</span><span class="p">;</span>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">de300keyspaces</span><span class="p">.</span><span class="n">users_by_country_sorted_by_age_asc</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">country</span><span class="o">=</span><span class="s1">&#39;UK&#39;</span><span class="p">;</span>
 
-<span class="go"> country | age | user_email       | first_name | last_name</span>
-<span class="go">---------+-----+------------------+------------+-----------</span>
-<span class="go">      UK |  20 | bob@email.com   |        Bob |   Sandler</span>
-<span class="go">      UK |  30 | peter@email.com |      Peter |     Clark</span>
-<span class="go">      UK |  40 | alice@email.com |      Alice |    Brown</span>
-
+<span class="w"> </span><span class="n">country</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">age</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">user_email</span><span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">first_name</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">last_name</span>
+<span class="c1">---------+-----+------------------+------------+-----------</span>
+<span class="w">      </span><span class="n">UK</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">20</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">bob</span><span class="o">@</span><span class="n">email</span><span class="p">.</span><span class="n">com</span><span class="w">   </span><span class="o">|</span><span class="w">        </span><span class="n">Bob</span><span class="w"> </span><span class="o">|</span><span class="w">   </span><span class="n">Sandler</span>
+<span class="w">      </span><span class="n">UK</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">30</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">peter</span><span class="o">@</span><span class="n">email</span><span class="p">.</span><span class="n">com</span><span class="w"> </span><span class="o">|</span><span class="w">      </span><span class="n">Peter</span><span class="w"> </span><span class="o">|</span><span class="w">     </span><span class="n">Clark</span>
+<span class="w">      </span><span class="n">UK</span><span class="w"> </span><span class="o">|</span><span class="w">  </span><span class="mi">40</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">alice</span><span class="o">@</span><span class="n">email</span><span class="p">.</span><span class="n">com</span><span class="w"> </span><span class="o">|</span><span class="w">      </span><span class="n">Alice</span><span class="w"> </span><span class="o">|</span><span class="w">    </span><span class="n">Brown</span>
 </pre></div>
 </div>
 <p>Notice that age is included as a clustering column, and sorted.</p>
@@ -512,6 +528,36 @@ Cassandra generally runs an <em>eventually consistent</em> model.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">country</span></code>, <code class="docutils literal notranslate"><span class="pre">age</span></code>, <code class="docutils literal notranslate"><span class="pre">user_email</span></code></p></li>
 </ul>
 <p>But querying by <code class="docutils literal notranslate"><span class="pre">country</span></code> and <code class="docutils literal notranslate"><span class="pre">user_email</span></code> becomes inefficient.</p>
+</section>
+<section id="deletion-of-data">
+<h3>Deletion of data<a class="headerlink" href="#deletion-of-data" title="Permalink to this heading">#</a></h3>
+<p>When data are replicated, deletion of data becomes complicated.</p>
+<p>Cassandra sets up <em>tombstone</em> to prevent reintroducing any deleted data.</p>
+<ul class="simple">
+<li><p>Typically a tombstone is placed on the values to be deleted (i.e., an <em>update</em>).</p></li>
+<li><p>(In a relational database,) an update statement is issued to change values to <em>deleted</em> in a row.</p></li>
+<li><p>The tombstones are kept for some length of time (<code class="docutils literal notranslate"><span class="pre">gc_grace_seconds</span> <span class="pre">=</span> <span class="pre">864000</span></code> by default).</p></li>
+</ul>
+</section>
+<section id="node-failure-detection">
+<h3>Node failure detection<a class="headerlink" href="#node-failure-detection" title="Permalink to this heading">#</a></h3>
+<p>Since a Cassandra ring (or cluster of nodes) contains potentially many nodes (which may fail), we need a mechanism to check if any individual node is failing.</p>
+<p>A <em>gossip</em> protocol system is employed in Cassandra to detect failures in the ring.  When any node spins up, it registers itself with the gossiper to receive the state of the cluster.</p>
+<p>The gossip protocol goes as follows:</p>
+<ol class="arabic simple">
+<li><p>Once per second, the gossiper will choose a random node in the cluster and initialize a gossip session.<br />
+(Each round of gossip requires three messages back-and-forth.)</p></li>
+<li><p>The gossip initiator sends a <code class="docutils literal notranslate"><span class="pre">GossipDigestSyn</span></code> message.</p></li>
+<li><p>When the friend receives the message, it returns a <code class="docutils literal notranslate"><span class="pre">GossipDigestAck</span></code> message.</p></li>
+<li><p>When the initiator receives the <em>ack</em> message, it sends a <code class="docutils literal notranslate"><span class="pre">GossipDigestAck2</span></code> message to complete the round of gossip.</p></li>
+<li><p>If there is no response, the initiator <em>convicts</em> the friend by marking it as dead in its local list and logging that fact.</p></li>
+</ol>
+<p>When is a failure detected?  Cassandra implements <strong>the <span class="math notranslate nohighlight">\(\phi\)</span> accrual failure detector <span id="id2">[<a class="reference internal" href="../99-references.html#id13" title="Naohiro Hayashibara, Xavier Defago, Rami Yared, and Takuya Katayama. The phi accrual failure detector. In Proceedings of the 23rd IEEE International Symposium on Reliable Distributed Systems, 2004., 66–78. IEEE, 2004.">Hayashibara <em>et al.</em>, 2004</a>]</span></strong>.</p>
+<ul class="simple">
+<li><p>A <em>suspicion</em> level is maintained by the failure monitoring system.</p></li>
+<li><p>Each node has a <em>Phi</em> suspicion level attached.</p></li>
+<li><p>If the suspicion level (e.g., number of gossips missed) goes beyond Phi in the node, then failure is declared.</p></li>
+</ul>
 </section>
 <section id="main-take-aways">
 <h3>Main take-aways<a class="headerlink" href="#main-take-aways" title="Permalink to this heading">#</a></h3>
@@ -599,6 +645,8 @@ Cassandra generally runs an <em>eventually consistent</em> model.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#replication">Replication</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#consistency">Consistency</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#pre-sorting">Pre-sorting</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#deletion-of-data">Deletion of data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#node-failure-detection">Node failure detection</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#main-take-aways">Main take-aways</a></li>
 </ul>
 </li>
