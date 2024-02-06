@@ -1,0 +1,947 @@
+Technometrics2023, Ahead-of-print, 1-13
+
+https://doi.org/10.1080/00401706.2023.2210170
+
+
+
+
+
+Constructing a Simulation Surrogate with Partially Observed Output
+
+
+Moses Y.-H. Chanhttps://orcid.org/0000-0002-2181-5116a , Matthew Plumleea ,b , and Stefan M. Wildhttps://orcid.org/0000-0002-6099-2772a ,c
+
+a Department of Industrial Engineering and Management Sciences, Northwestern University, Evanston, IL
+
+b NAISE, Northwestern University, Evanston, IL
+
+c Applied Mathematics and Computational Research Division, Lawrence Berkeley National Laboratory, Berkeley, CA
+
+
+
+
+
+Abstract
+
+
+Gaussian process surrogates are a popular alternative to directly using computationally expensive simulation models. When the simulation output consists of many responses, dimension-reduction techniques are often employed to construct these surrogates. However, surrogate methods with dimension reduction generally rely on complete output training data. This article proposes a new Gaussian process surrogate method that permits the use of partially observed output while remaining computationally efficient. The new method involves the imputation of missing values and the adjustment of the covariance matrix used for Gaussian process inference. The resulting surrogate represents the available responses, disregards the missing responses, and provides meaningful uncertainty quantification. The proposed approach is shown to offer sharper inference than alternatives in a simulation study and a case study where an energy density functional model that frequently returns incomplete output is calibrated.
+
+
+Article History
+
+Received 10 December 2021
+
+Revised 25 April 2023
+
+Accepted 27 April 2023
+
+
+
+Keywords
+
+Calibration, Gaussian process, High-dimensional output, Missing data, Statistical emulation
+
+
+
+
+
+* * *
+
+
+
+Contact Matthew Plumlee mplumlee@northwestern.edu Department of Industrial Engineering and Management Sciences, Northwestern University, Evanston, IL.
+
+Supplementary materials for this article are available online. Please go to www.tandfonline.com/r/TECH.
+
+
+
+
+
+© 2023 American Statistical Association and the American Society for Quality
+
+
+
+
+
+1 Introduction
+
+
+Computer simulations are used to understand and analyze systems where directly experimenting on the real system is difficult or infeasible. The output of a simulation model depends on a user-specified input configuration that defines the physical and controllable properties of the system. When a user simulates the system, also referred to as running the simulation, they receive outputs related to quantities of interest to the user. Running a simulation can be computationally expensive; each run can cost thousands of core-hours, see for examples the simulation of storm surge (Plumlee et al. 2021a), influenza spread (Venkatramanan et al. 2021), and nuclear dynamics (Phillips et al. 2021). Because these simulations are expensive, it is often helpful to build an emulator, or “surrogate,” trained on simulation data to predict at unsimulated (i.e., out-of-sample) configurations.
+
+Surrogate technology is often deployed for calibration (Kennedy and O’Hagan 2001), where an input configuration is represented by a multidimensional parameter. When run at a parameter, the simulation returns a high-dimensional output consisting of multiple responses collected on a set of fixed locations. While there are many variations of the exact type of inference (Tuo and Wu 2015; Gramacy et al. 2015; Plumlee 2017), the overall goal is to learn the parameters by aligning the physical observations with the simulation outputs using computational tools like Markov chain Monte Carlo (MCMC). Because simulation runs are expensive, it is not possible to run the simulation the millions of times needed for MCMC. Instead, the idea is to run the simulation model for a set of representative parameters and to collect the simulation output from each run; consequently, the surrogate is constructed as the prediction conditional on the simulation output data. Important to solving the calibration problem is that the surrogate produces a measure of uncertainty in the surrogate’s predictions.
+
+The most prominent tool for building statistical surrogates involves Gaussian processes (GPs) (Santner, Williams, and Notz 2018; Gramacy 2020). GPs offer both an accurate prediction and a measure of uncertainty. The case of high-dimensional outputs leads to the computational intractability of many surrogate construction tools. Two approaches have been proposed to remedy this computational challenge. The first one employs a Kronecker structure of the covariance function of the GP, which assumes a separation between parameters and locations (Rougier 2008; Hung, Joseph, and Melkote 2015; Guillas et al. 2018; Marque-Pucheu, Perrin, and Garnier 2020). The second approach employs a dimension-reduction step for the outputs before the building of surrogates (Bayarri et al. 2007; Higdon et al. 2008; Gu and Xu 2020). This is in contrast to data-reduction procedures that seek to choose a smaller set of points to represent the entire parameter space (e.g., the selection of support points (Mak and Joseph 2018)). Examples of dimension-reduction procedures include extractions of principal components (Higdon et al. 2008; Lawrence et al. 2017; Gu and Xu 2020), wavelet coefficients (Bayarri et al. 2007), and calibration-optimal bases (Salter et al. 2019) from the simulation output data. (Salter et al. (2019) require the knowledge of physical observations, in addition to the simulation output.) These procedures require complete data, meaning for each run, the entire output has to be returned by the simulation. However, in seeking high levels in both performance and fidelity, modern simulation codes may produce partially observed outputs. Hung, Joseph, and Melkote (2015) have developed an Expectation Maximization (EM) algorithm to address the issue of partially observed output prior to constructing a surrogate, and their method is included for comparison in this article (see Section 5). In this article, we focus on extending the second approach to incorporate partially observed outputs.
+
+The presence of partially observed output can be attributed to various causes of code failures. One cause is failure in parallel computing environments where separate computations are scattered over a large number of computing nodes. If a computing node experiences failure during calculations, only some of the calculations may be completed. Another cause is related to numerical calculations embedded in simulation codes. For example, in a simulation that involves solving a system of nonlinear equations, if the system corresponding to a response is inconsistent or particularly ill-conditioned, then no meaningful solution may be found numerically. Another cause comes from simulations where some responses in an output are undefined. It is not always easy to identify a single underlying cause. Consider a parallel computing environment where a response is not returned because a simulation is terminated by the environment when it exceeds a time limit. The response could be missing because the time limit was set too low, but it could also be missing because the numerical calculations within the simulation would never have terminated. Regardless of the cause, the presence of partially observed outputs renders most surrogate methods inapplicable. Partially observed outputs can be viewed in the context of data missingness. There are several classical categories of missingness mechanisms considered by statisticians: missing completely at random (MCAR), missing at random (MAR), and missing not at random (MNAR). In practice the underlying causes of partially observed output are difficult to untangle because of the typically deterministic nature of computer code. Failure in computing nodes seems as though it can be considered MCAR, but in many cases it is MAR because run time depends on the input and longer simulations are more likely to encounter a failure than a shorter one. There are many examples of missingness in simulation codes, including climate studies (Chang et al. 2014; Ma et al. 2022); fluid dynamics (Huang et al. 2020); nuclear physics (Bollapragada et al. 2021); and weather dynamics (Plumlee et al. 2021a).
+
+Despite the common occurrence of partially observed output, there are few methods available for high-dimensional surrogate construction in this setting. The naïve approach would be to simply discard the dimension-reduction step entirely and treat each response separately. In this case, one discards the missing responses and pushes forward with surrogate construction with the available responses. The naïve approach includes locations as additional input dimensions. This inclusion allows for the correlation structures among both parameters and locations to be modeled, similar to the inclusion of time index as an additional input (Bayarri et al. 2009). However, this approach can easily exceed the limit of standard GP inference when the number of data points goes above several thousands. The only recourse while staying with GP inference then leaves GP approximations, which are still significantly more expensive than dimension-reduction approaches and lead to decreased accuracy. Another approach is to neglect correlations between locations and build an independent surrogate for each location. When the output contains a small number of responses, building separate surrogates often suffices (Baker et al. 2022). However, as the number of responses increases, this approach is prohibited by its computational burden. Simplistic imputation is yet another option, where one imputes the missing values and then builds a surrogate using dimension-reduction tools (e.g., Plumlee et al. 2021a). The imputation process can be done in various ways besides prediction, such as a “constant-liar” imputation used in optimization (e.g., Chevalier and Ginsbourger 2013). For purposes of uncertainty quantification, these methods are dangerous as they will interpolate the imputed values with zero residual uncertainty. For example, if the entire output from a run is missing, the imputation approach would simply interpolate the imputed values instead of representing them as missing, which seems contrary to the goals of a surrogate to faithfully represent the predictive uncertainty.
+
+In this article we propose a new GP surrogate method that operates well in the presence of partially observed simulation output. The new method retains the computational efficiency found with dimension-reduction methods like those described in Higdon et al. (2008). However, in contrast to previous such approaches, the new method is not limited to complete data. This method involves two components: the imputation of missing values in the data using the principal components and an adjustment to the covariance matrix used in GP prediction. The adjustment to the covariance matrix ensures that one does not interpolate the imputed values at the missingness locations. The resulting surrogate permits the use of data with partially observed output, and it has two appealing properties: (i) In the case where complete data is observed for a run, the resulting surrogate will interpolate those results and (ii) in the case where no data is observed for a run, the associated data row (even though imputed) will be ignored. The new surrogate method demonstrates robustness empirically under various missingness mechanisms, and provides improved uncertainty quantification in calibration.
+
+The organization of this article is as follows. Section 2 describes the Fayans energy density functional (EDF), the simulation model that motivates this surrogate development. Section 3 introduces the setting and notation employed, and reviews the principal component GP method for surrogate construction. Section 4 details the imputation and covariance adjustment components in the new surrogate method alongside its properties. Section 5 details a numerical experiment to illustrate the surrogate performance under multiple missingness scenarios. Section 6 discusses the calibration of the Fayans EDF model. Section 7 provides further discussions and closes the article.
+
+
+2 Fayans Energy Density Functional
+
+
+The development of our proposed surrogate method is motivated by problems such as the calibration of the Fayans EDF (Fayans 1998; Fayans et al. 2000). The development and refinement of EDF models have proven effective in understanding atomic nuclei (Reinhard and Nazarewicz 2017). The EDF model investigated in this article was developed by S. A. Fayans and collaborators for describing ground-state properties of nuclei (Fayans 1998; Fayans et al. 2000), and has since been used for nuclei predictions (e.g., see Yu and Bulgac 2003; Reinhard and Nazarewicz 2017). Bollapragada et al. (2021) provides a full description of the numerical implementation under consideration in this article. The model takes a 13-dimensional parameter as input and outputs 198 responses. Each response corresponds to a spherical, ground-state, even-even nuclear configuration and an observable class. A total of 72 nuclear configurations and 9 observable classes are considered, totaling to the 198 responses. The list of responses can be found in Table 1 of Bollapragada et al. (2021).
+
+
+Table 1 Construction times (in seconds) and predictive accuracies of PCGPwM and colGP at output dimension m = 200. (Table view) Construction time (s)
+
+RMSE ()
+
+90% coverage
+
+90% width
+
+
+
+nPCGPwMcolGPPCGPwMcolGPPCGPwMcolGPPCGPwMcolGP
+
+1000 640 4225 3.9 2.5 0.912 0.962 0.764 0.920
+
+2500 9680 – 0.62 – 0.981 – 0.571 –
+
+
+
+The main relevant feature of this model is that it occasionally produces partial outputs, that is, within one output, some out of the 198 responses are missing due to code failures, presenting a challenge in constructing a surrogate effectively. Missingness often occurs because an iterative method for solving equations is used in model evaluation, and failure is reported when the method fails to achieve a prescribed accuracy tolerance within an allotted internal iteration budget. Bollapragada et al. (2021) outline the intricacies of possible failures and show that it is not likely the output is MCAR. However, no systematic missingness mechanism is proposed. In previous analyses of another EDF model, of the model outputs were discarded due to such types of failures (Higdon et al. 2015).
+
+In Section 6 we use a dataset of 500 parameters to construct a surrogate and calibrate the Fayans EDF model. An illustration of this is presented in Figure 1, where out of 500 runs of the model, near have at least one missing value.
+
+
+
+
+Fig. 1 Illustration of partially observed output in our case study (Section 6). Each horizontal line (1–500) is a length 198 simulation output. A dark patch indicates where a response is missing. The horizontal lines are sorted by number of missing values in the output. In calibrating the Fayans EDF model, Bollapragada et al. (2021) have previously employed a point minimization of the total mean-squared loss, or loss, with respect to the parameters. Other works calibrated other EDFs in a similar manner, with minimization of the loss (Dobaczewski and Olbratowski 2005; Kortelainen et al. 2010, 2012, 2014; Reinhard and Nazarewicz 2017). Such approaches do not directly result in the uncertainty quantification sought by nuclear physicists (Dobaczewski, Nazarewicz, and Reinhard 2014). For some other EDFs, uncertainty quantification was performed under a Bayesian framework by Higdon et al. (2015) and McDonnell et al. (2015), but these works assume no missing data (or simply remove output with missing data).
+
+The existing literature does not contain a viable methodology to solve problems like this one. One method is proposed in Ma et al. (2022) to extract functional principal components, which originates from the analysis of partially observed longitudinal data. The locations in Ma et al. (2022) are irregularly spaced between output dimensions, producing partial, often sparse, output at each dimension. In our problem, all responses are expected for each parameter, but missing values may arise for some responses because of various code failures. Lawrence et al. (2017) have proposed to extract principal components using complete output data, and project the partially observed output data onto a subset of basis vectors to obtain the weight coefficients. This treatment of partially observed output data is effective when the locations of missing data are regular. Similarly, in Gu and Xu (2020), the output data are modeled to follow a partition of complete and missing data blocks. The complete data block is then used for principal component analysis following Higdon et al. (2008). In their case, the complete data block contains a large proportion of the output data. However, it is not applicable in our setting since our missing values are irregular. Thus, the equivalent complete data block retains only a small proportion of the output data, resulting in inaccurate estimation of the principal components. Another method is proposed by Hung, Joseph, and Melkote (2015), in which an EM procedure is developed to tackle the issue of missing data, coupled with a separable correlation function that reduces the computational cost. The scale of their intended application is quite small, preventing direct application for our intended application. Hung, Joseph, and Melkote (2015) have studied a problem with 30 runs and only a few runs with missing data; whereas in the Fayans EDF case, the number of simulation runs is 500, and over half of them result in a partially observed output, recall Figure 1. The method proposed by Hung, Joseph, and Melkote (2015) is revisited in the numerical experiments in Section 5.
+
+
+3 High-Dimensional Surrogates
+
+
+This section introduces the notations used in this article and reviews standard GP modeling and its principal component based extension to high-dimensional surrogate construction (Higdon et al. 2008).
+
+
+
+
+
+3.1 Setting and Notations
+
+
+We label the user-specified parameter . Because surrogate inference is often deployed in calibration settings, is referred to as a “parameter.” We assume that for a simulation run at , the simulation output is collected over a fixed set of locations, labeled as , and thus meaning the simulation evaluated at will produce an output vector consisting of m elements. Each element in is considered an individual response. For example, in the Fayans EDF, the user-specified represents a 13-dimensional parameter and defines a nuclear configuration that corresponds to a response where m = 198 (see Section 2).
+
+We presume that we have generated some parameters from a designed computer experiment (such as a Latin Hypercube sample (McKay, Beckman, and Conover 1979) or optimized variations thereof (Joseph, Gul, and Ba 2015)), and the collection of simulation responses is arranged as the n × m matrix Each row represents the simulation output for one parameter at all locations . Each column represents the response collected at all parameters in the computer experiment. Since individual responses may be missing, we denote N as the total number of available responses. If the collection has complete data, For any matrix , we use to refer to the ith row, to refer to the jth column of . We use to denote a submatrix of with entries from the set of row indices and column indices . Commas will be used to separate the row and column indices when the notation is ambiguous.
+
+
+3.2 Gaussian Process Surrogates
+
+
+A surrogate is constructed to enable the prediction of output at an unsimulated parameter. A good surrogate is designed to provide a predictive distribution, which can then be converted to point estimates and uncertainty around those estimates. In this article, a surrogate provides a predictive distribution for with a mean and a covariance matrix . GPs offer a path to do exactly this with a multivariate normal predictive distribution (Santner, Williams, and Notz 2018; Gramacy 2020). GP is a common choice to build a surrogate because of its flexibility and ability to interpolate.
+
+
+
+
+
+3.2.1 Univariate GP
+
+
+This section will review the basics behind GP inference. Consider as a univariate function that takes as its input. A GP model with mean function , scale parameter λ, and correlation function assumes that for any collection of n scalar outputs (e.g., ), follows a multivariate normal distribution with mean and covariance matrix where . Typical choices for ρ include a squared exponential or a Matérn correlation function (Handcock and Stein 1993), but this choice does not impact the rationale of our method and is left open in this article. Using the GP as a surrogate means that the predictive distribution given at any test parameter is a normal distribution with mean and variance , where is the correlation between and . The standard form of this inference thus requires , which costs typically operations to compute (though approximations do exist).
+
+The computational cost is a significant obstacle that requires consideration while conducting GP inference. It is critical that the construction of the surrogate and predictions via the surrogate should be fast compared to running the simulation itself (Gramacy 2020). In the high-dimensional case, the total number of responses is N = nm. One could use off-the-shelf GP inference, where each response received from the simulation is individually modeled over both and , that is, the previously mentioned naïve approach, typically uses computations to obtain the necessary matrix inverses and determinants. When N is moderately large (e.g., 104), naïvely using GP inference is difficult because of this computational burden. For our case study, m = 198 and hence would constrain us to roughly n less than about 50. The accuracy of a GP surrogate is tied to n, and the practical results for our case study found that at n = 50 the surrogate is not sufficiently accurate. Researchers have considered this setting before and noted that the problem arises when the model output is multivariate with many responses. A high-dimensional output happens when the number of responses m gets large (often above > 20). There are a few choices for high-dimensional GP surrogates (Bayarri et al. 2007; Higdon et al. 2008; Conti and O’Hagan 2010), with the majority of these methods seeking to reduce the required computations to , such that the computational burden effectively depends only on n.
+
+
+
+
+
+3.2.2 High-Dimensional GP Surrogates
+
+
+Higdon et al. (2008) describe a powerful tool for building surrogates in high-dimensional output settings. Examples of successful applications include nuclear physics (Higdon et al. 2015) and storm surge (Kyprioti et al. 2021) modeling. The method works by leveraging a low-rank representation for the m-dimensional output by applying a singular value decomposition to the matrix . Specifically, this method seeks , where is an matrix defined by a set of κ orthonormal (i.e., ) m-dimensional basis vectors. These are chosen such that for some reasonable m-dimensional centering vector , we have , meaning we can approximately recover our simulation outputs using only the matrix . The centering vector is often chosen as the mean of each column in . Then, the original data are nearly recovered by . The value of κ is typically chosen to offer sufficient recovery of from . This representation method is especially effective when there is a strong relationship among the responses of the simulation output because then κ can be made small (i.e., ). Suppose . Then, the surrogate for the simulation is constructed as . Thus, our goal shifts from building a surrogate on an m-dimensional output to building a surrogate on a κ-dimensional output .
+
+Our goal is now to use information in the matrix to infer on the projected output for any . Due to the orthogonal construction of , each component of is modeled using an independent GP. Each then follows
+
+
+
+(1)
+
+
+
+where, for component k, is a scale parameter, is a correlation function, and we have set the mean to be zero for ease of exposition. With data column , under the GP model, prediction for follows a normal distribution with mean and variance given by
+
+
+
+(2)
+
+
+
+where and From this, the surrogate is then defined by
+
+
+
+(3)
+
+
+
+
+
+We refer to this method of constructing a surrogate as Principal Component Gaussian Process (PCGP). For PCGP methods, is not of full rank when , thus, the predictive distribution is often degenerate. However, similar to Higdon et al. (2008), when a surrogate is used to facilitate parameter calibration, is summed with a (typically diagonal) strictly positive definite observation error covariance matrix (see Section 6.1). The resulting sum of the matrices is then full rank and thus not being strictly positive definite does not pose a problem.
+
+The inferences in (3) are used to provide the mean and covariance of the surrogate for . If there are partially observed simulation outputs, there are reasonable ways to approximate the principal component matrix and the centering vector (see e.g., Roweis 1997; Tipping and Bishop 1999). The details of approximating , an EM algorithm inspired by Roweis (1997), are included in the Supplementary Material (Chan, Plumlee, and Wild 2023). However, partially observed simulation output in means that cannot be computed. Take the ith row of the data for example, if has one or more missing responses, then cannot be computed. When m is large, it can often be the case that at least one response can be missing in a row, which leaves the rest of the data in the same row unusable without remedy. We then risk tossing out a large amount of data because of a few failures. Higdon et al. (2008) also commented on the necessity of complete data for the use of PCGP. This leaves us at a crossroads. If we use the PCGP approach, we cannot handle missing data. If we do not adopt the PCGP approach, the surrogate computation may be impossible due to the explosive increase in required computations. This article explains how one can expand the PCGP surrogate methodology to handle missing data.
+
+
+
+4 Fast Surrogates with Missing Data
+
+
+We now introduce our method for constructing a surrogate for high-dimensional outputs in the presence of missing data. Specifically, we propose an imputation method for the missing observations during the computation of alongside a novel adjustment of the covariance matrix. The resulting method is computationally inexpensive and therefore the benefit of fast construction using PCGP is retained.
+
+Section 4.1 describes and illustrates the desired properties of the proposed surrogate. Sections 4.2 and 4.3 detail the imputation and covariance adjustment procedures. Section 4.4 shows how the proposed method delivers the desired surrogate properties. Section 4.5 describes the hyperparameter estimation used in the construction of the surrogate. Section 4.6 provides additional justification for the choice of covariance adjustment.
+
+
+
+
+
+4.1 Desired Surrogate Properties
+
+
+In constructing this surrogate, we consider it necessary to have two desirable properties, the recovery of complete data rows and the ignorance of entirely missing data rows. Meaning, we want to nearly interpolate to chosen precision where the output is complete and disregard where the output is entirely missing.
+
+The motivation for these desired properties can be explained through a thought experiment. Let the collected data be an n × m matrix, corresponding to simulation outputs at the parameters . Let only have data available in rows, and for these rows, the outputs are complete. Let the matrix denote the available data rows; without loss of generality, we take for all . We assume that all of the remaining rows are entirely missing; this can occur, for example, when the computer running the simulations went down after completing n0 rows. Suppose we separately construct two surrogates using a proposed method: one with data and one with data . Let the surrogate with be described by , and the surrogate with be described by . The recovery of complete data rows means that the surrogate should nearly interpolate for the rows with complete data; that is, and for all . The only interpolation error that should exist is due to the dimension reduction () representation we have chosen. The ignorance of entirely missing data rows means that the surrogate should not depend on any of the rows for any i larger than n0; that is, and for any .
+
+Let us see how obvious approaches, namely the naïve and simplistic imputation approaches described in the introduction, fare with respect to these goals. The naïve method, where one treats each data point individually, would interpolate all observed points and ignore the remainder. Thus, it meets our goals, but this method becomes computationally intractable in our settings because of the large N problem. The simplistic imputation approach would impute all rows when dealing with and then interpolate that imputation. This implies it would nearly interpolate all observed rows, but the predictions from the simplistic imputation approach using and are inconsistent. This inconsistency implies that throwing out or keeping rows with fully missing output will give different predictions.
+
+The method proposed in this article is able to nearly interpolate complete rows and ignore missing rows similar to the naïve method, yet it remains computationally tractable. While these criteria do not guarantee interpolation of outputs in the partially observed output case, it is our expectation and experience that by matching these two extremes, the predictions in the partially observed case offer notably better predictions than the simplistic imputation approach. We later justify this with simulation experiments in Section 5.
+
+
+4.2 Gaussian Process-based Imputation
+
+
+We will assume the GPs modeling are stationary, and thus, without loss of generality, let for . Furthermore, this section will assume the centering constant for ease of exposition. If we consider the relationship that our output is (nearly) , its covariance, following (1), is of the form
+
+
+
+(4)
+
+
+
+where is the diagonal matrix , due to the independence among the κ GPs in (1). These values are presumed decided in advance. For example, a reasonable choice deployed in our examples sets to the square of the corresponding singular values from the decomposition of .
+
+The covariance matrix in (4), similar to the one in (3), is not of full rank. Therefore, it is difficult to use (4) because the low-rank nature implies that one can have effectively “fully observed” after observing only κ entries. Instead, we will use a full-rank extension of this matrix. Pick such that for all . This choice of ε ensures that this covariance matrix extension for , defined as
+
+
+
+(5)
+
+
+
+is of full rank, and thus and any principal submatrix of are invertible.
+
+Using the covariance matrix in (5), we impute the missing observations to build , an matrix with complete entries, to replace .
+
+Let be the set of column indices where data are not missing in . Then, let be the row vector that contains the available data for parameter and be the submatrices corresponding to the indices. Because this section assumes a centering vector of zeros,
+
+
+
+
+
+where this is a degenerate multivariate normal distribution. Subsequently the conditional mean and covariance of given , following standard normal theory (e.g., (Gelman et al. 2013)), are
+
+
+
+
+
+respectively. We propose then to infer using the conditional quantities
+
+
+
+(6)
+
+
+
+
+
+(7)
+
+
+
+
+
+This proposed inference is the key insight for our approach. While (6) is a reasonable use of our principal components for imputation, (7) is a valuable measure of goodness for the imputation, since the conditional variances reflect the imputation uncertainty. The quantities uik from (7) are used to adjust our GP’s covariance matrix to account for the uncertainty due to imputation. For the suggested inferences to be practically useful, the inversion of the submatrix of should be efficient. The details of such inversion are provided in the supplementary material (Chan, Plumlee, and Wild 2023).
+
+
+4.3 Covariance Adjustment
+
+
+The additional uncertainty from the imputation of missing data needs to be accounted for. We propose adjusting the covariance matrix by adding an extra term to , the original covariance matrix in (2), in order to model the increase in variance of prediction due to imputation. Defining the scaled predictive variances by , the proposed adjusted covariance matrix is
+
+
+
+(8)
+
+
+
+where is a large constant introduced to prevent infinite values from corrupting our linear algebra, and and are hyperparameters that affect the magnitude of the additional term. In particular, α controls the penalty for extreme missingness in an output and βk controls the amplification of additional variances for component k. In the case if we set , the variance added from imputation is not accounted for, and the imputed values are treated as observed and interpolated.
+
+Using (6) on every row with missing data, is the completed kth column of the low-dimensional data. Combining that with our covariance in (8) gives that prediction for with
+
+
+
+(9)
+
+
+
+
+
+(10)
+
+
+
+
+
+where The completed version of the surrogate provides a prediction for that has a multivariate normal distribution with updated mean and covariance
+
+
+
+(11)
+
+
+
+
+
+Recall that for this section we set , thus, these terms agree closely with the PCGP terms in (3), where we have only modified the predictions of means and variances. If there is no missingness in our simulation output, the expressions in (3) and (11) will exactly agree.
+
+
+4.4 Properties of the Proposed Surrogate
+
+
+The following result guarantees that if there is no missing data in the ith row (i.e., ), then recovers without additional uncertainty.
+
+Theorem 1 (Recovery of fully observed row). If , then and for .
+
+The proof is given in the supplementary material (Chan, Plumlee, and Wild 2023). On the other hand, notice that if there is no data in the ith row (i.e., is the empty set), then
+
+
+
+
+
+Our next result establishes that our method naturally ignores these rows of missing data.
+
+Theorem 2 (Ignorance of missing rows). Define the kth surrogate component, where all rows with entirely missing data are excluded from construction, by and from (9) and (10), respectively. If , then for any , and , we have that and as .
+
+The proof is provided in the supplementary material (Chan, Plumlee, and Wild 2023). Although Theorem 2 is stated in a limit as our numerically stabilizing parameter η goes to infinity, we note that in our deployments on real problems that setting η to 10 results in reasonable ignoring behavior.
+
+
+4.5 Estimation of Hyperparameters in Surrogate Construction
+
+
+To construct the surrogate is to fit the hyperparameters for all components. Besides the covariance adjustment coefficient βk, additional hyperparameters are implicitly included in the notation of the covariance function where encapsulates the covariance function hyperparameters. Within this section, we use the notation to highlight the dependence of the adjusted covariance matrix on both βk and . The surrogate construction involves the optimization of the log-likelihood with respect to the hyperparameters, which can be simplified to
+
+
+
+
+
+where returns the determinant of . The evaluation of the log-likelihood involves the decomposition of the covariance matrix that costs operations, where n is the number of parameters. In our deployment, we use a gradient-based L-BFGS optimization solver to approximate the maximum likelihood estimate.
+
+
+4.6 Rationale for the Extra Term
+
+
+We now provide justification for the choice of the extra term in (8) alongside hyperparameters α and β. While wik can be used directly as the added variance terms, it is insufficient to represent the intuition that (i) if the row has complete data, no adjustments should be made, and (ii) if no data are observed in the row, the added term should be infinite, because we have no information about the row. In the case where α = 0, vik = wik does not achieve infinity when no data are observed. When , the added term vik = 0 when wik = 0, and when wik = 1. Moreover, the magnitude of α controls the rate of increase of variance vik as wik increases. The variance term vik represents the uncertainty introduced from observing only at the index set for row i. As α increases, vik increases with a faster rate to infinity as wik approaches 1. The effect of α is illustrated in Figure 2. The hyperparameter βk is introduced to control the inflation (or deflation) of additional variances for the kth surrogate component. The βk value can vary across the components. When , the additional variances have no effect to the surrogate, as if there is no uncertainty due to data missingness. When βk is infinite, the overwhelming additional variances will cause any row with any amount of missing data to be ignored. When , no adjustment is made. The hyperparameters are estimated in the surrogate construction.
+
+
+
+
+Fig. 2 Illustrations of the effect of hyperparameter α in the variance term Except for α = 0, vik approaches infinity as wik approaches 1. A numerical experiment is presented in supplementary material (Chan, Plumlee, and Wild 2023) that investigates the choice of α and if βk should be either equal to 1 or optimized as a hyperparameter. We found the best behavior when the βk are optimized and found could negatively impact the prediction accuracy. We suggest as a default choice.
+
+
+
+5 Numerical Experiments
+
+
+We now present the numerical experiment for evaluating the performance of our proposed surrogate method.
+
+
+
+
+
+5.1 Setup of Numerical Experiments
+
+
+We compare the proposed method with other methods that employ common strategies for dealing with missing data. A total of six methods are considered. We label our method as “PCGPwM,” for PCGP with Missingness. Among the other methods, the first method (“GP-OM”, standing for GP-Omit-Missingness) is to omit the missing data, which is the naïve approach that treats the N responses individually and discards the missing points. The second method (“colGP”) is to treat locations as independent and construct a GP for each of m locations. Gu and Berger (2016) refer to colGP as the “Many Single” emulator approach and have commented on its computational intractability when m is large. Gu and Berger (2016) resolves this computation issue by aligning common Gaussian process parameters across locations, but this fix is not needed here as our m is relatively small. We consider the EM-based method by Hung, Joseph, and Melkote (2015) as the third method (“EMGP”). The next two methods involve the simplistic imputation approach with two different imputation procedures. The two imputation procedures considered are the k-nearest neighbor method (see e.g., (Altman 1992)), and Bayesian ridge regression (Tipping 2001). Since the PCGP method is used on the imputed data, these two methods are termed “PCGP-kNN” and “PCGP-BR,” respectively. In addition to these methods, we compare PCGPwM with a baseline method where the principal components are assumed known. This comparison is reported in the supplementary materials (Chan, Plumlee, and Wild 2023).
+
+GP-OM treats the missing data as if they were not present. We discard any response that is missing. After omitting the missing data, the remaining data do not necessarily form a data matrix. For example, one row may have no missing data, while another row may have one or more entries removed. Instead, the remaining data are stacked into a column and a single GP is constructed as a surrogate. Due to the stacking of data, this method becomes intractable as the computational complexity is , with N being the number of available data points. The colGP method treats each as independent locations and constructs m GPs. If m is large, computational costs may not permit the use of colGP simply due to the number of GPs to be constructed. The EMGP method estimates the missing values via an EM algorithm and uses a separable covariance matrix to speed up its GP construction. For each of the simplistic imputations, the missing data are first imputed and PCGP is then applied to construct the surrogate. The k-nearest neighbor method imputes the missing value by averaging the k closest available data points, using the Euclidean distance between couples . The Bayesian ridge regression fits a regression model and imputes the missing values with the predictions of the model. In the implementation of the imputation methods using scikit-learn (Pedregosa et al. 2011), missing values in each data column are imputed in a round-robin fashion for 10 iterations, and the result from the final iteration is returned. See the package documentation on IterativeImputer for details.
+
+We use four functions as test examples, namely the borehole function, piston function, wingweight function, and OTLcircuit function. These are common test functions for emulation and uncertainty quantification, located at http://www.sfu.ca/∼ssurjano/index.html. The input variables of each function are partitioned into . Our proposed method does not address the source of missingness in the data. To test the robustness of the method, we generate partially observed output with the three missing mechanisms mentioned in Section 1. The missing mechanisms are MCAR, MNAR, and MAR. Under MCAR, any response has the same probability of missing. Under MNAR, the response missingness depends on unobserved quantities, for example, the value of the response. Under MAR, the response missingness only depends on quantities that are observed, for example, the parameter and location in our case. For each of these missingness mechanisms, the percentage of missingness is specified. The methods are tested at 1%, 5%, and 25% missingness levels. With MNAR, values of the borehole and the wingweight functions are missing when the evaluated function value exceeds a threshold; and the values of the OTLcircuit and the piston functions are missing according to the probability determined by a logistic model over the fixed locations. With MAR, The missingness is randomly assigned over a subset of the fixed locations. The test functions and the details of the MNAR and MAR generation are included in the supplementary material (Chan, Plumlee, and Wild 2023).
+
+The size of the output, m, is set as 15. The set of locations, , are uniformly sampled from their respective ranges. The number of parameters, n, is set to take values and 2500. The parameters are sampled using a Latin Hypercube design (Santner, Williams, and Notz 2018) in the unit hypercube, and then scaled to their respective ranges. Denoting a missingness scenario to be the missing mechanism and the missing fraction combined, nine scenarios are considered: (MCAR, 1%), (MCAR, 5%), (MCAR, 25%), (MNAR, 1%), (MNAR, 5%), (MNAR, 25%), (MAR, 1%), (MAR, 5%), and (MAR, 25%). We construct a surrogate using each method, by supplying it the output of the model, for each combination of n and missingness scenario. To efficiently compare the methods, we fix the locations, the parameters, and the set of missing values across the four methods in one replication. Each experiment is run for 20 replications for all test functions. Each replication is given 1 hr of run time and is canceled if the surrogate construction and prediction takes longer than that.
+
+All methods are implemented through the Python package surmise (Plumlee, Sürer, and Wild 2021b), a modular package that interfaces different statistical emulation and calibration methods. Our proposed method is implemented under the name PCGPwM. For GP-OM, GPy (GPy since 2012) is used to construct the surrogate. The colGP method is implemented under the name colGP. The EMGP method is implemented under the name EMGP. For PCGP-kNN and PCGP-BR, first the imputations are performed with scikit-learn (Pedregosa et al. 2011), then the completed data are supplied to the PCGP method to construct a surrogate. The simplistic imputation approach is implemented under the name PCGPwImpute with an option of which imputation method to use.
+
+
+5.2 Results of Comparison Experiments
+
+
+This section will discuss representative results for the (MNAR, 5%) missingness scenario. For a full description of the results of our simulation, we direct the reader to the supplementary material (Chan, Plumlee, and Wild 2023).
+
+All methods are competitive in computation, except GP-OM, which costs roughly 30 times as long for all n. Naïvely omitting missing values in the data destroys the regular structure, and further leads to tractability issues. In addition, EMGP does not complete at the largest data size within the time limit. The remaining constructions are completed under the time limit. Note that although the colGP method completes all surrogate constructions within time limit here with m = 15, its computation time may be prohibitive when m is too large, which is further explored in Section 5.3.
+
+The quality of the surrogate methods is measured by the root mean squared error (RMSE), the coverage probability of the 90% prediction interval (90% coverage), and the width of the same interval (90% width). While RMSE concerns the predictive accuracy of the mean, 90% coverage and 90% width are empirical measures of the quality of the surrogate’s uncertainty quantification. The measures are evaluated against holdout simulation runs, and any missing values in the runs are excluded from evaluation.
+
+Figure 3 shows the RMSEs for the surrogate methods being compared. For the borehole and the wingweight functions, the RMSE decreases for all methods except the simplistic imputation methods as N increases; whereas for the piston and the OTLcircuit functions, the RMSEs decrease for all methods. GP-OM shows to be generally not competitive in both its computation time and predictive accuracy. The simplistic imputation methods, PCGP-kNN and PCGP-BR, fail to circumvent the issue of missing values, especially when the missingness is MNAR. Since the simplistic imputation approach relies on the availability of close neighbors to the missing points, if the function values are never observed within a certain region, the missing values would be imputed with far-away values of little relevant information. As a result, they result in poor predictions. The EMGP method performs comparably with the simplistic imputation methods, sometimes better, in the case of the wingweight function. The colGP method performs well across all methods in predictive accuracy, especially in the piston and OTLcircuit test functions. The continuous improvement with colGP as N increases shows a potential drawback in using principal-component methods for dimension reduction. Similar conclusions are drawn for (MNAR, 1%) and (MNAR, 25%). We find that in the case of MCAR and MAR, the accuracy of all methods improves as N grows, where PCGPwM performs better than all methods except for colGP.
+
+
+
+
+Fig. 3 Comparison (log-log scale) of prediction accuracy of surrogate methods for (MNAR, 5%) scenario. The 90% coverage records how often the simulation response is contained in the interval produced by the surrogate. The quality of the surrogate is measured by comparing the 90% empirical coverage with the nominal level (in this case, 90%). A coverage close to the nominal level with a narrow width is an indication of a good surrogate. GP-OM results in overcoverage in the borehole function and significantly undercoverage in the remaining functions. By investigating the interval widths, we observe that GP-OM produces a prediction interval too wide in the borehole and too narrow in the others. The EMGP method attains adequate coverage in the piston and wingweight functions, while undercovers in the borehole and wingweight function. As the data size grows, the coverage for the wingweight function increases and attains the prescribed level. The simplistic imputation methods, PCGP-kNN and PCGP-BR, exhibit overcoverages in the borehole and wingweight functions, as a result of wide intervals. PCGPwM achieves the prescribed coverages while being able to provide sharper predictions, indicated by narrower intervals. In the MCAR and MAR scenarios, both the coverage and the prediction interval widths improve as N grows for all methods.
+
+Overall, the proposed PCGPwM method performs generally well in terms of RMSEs and is robust to different types of data missingness. The method also preserves the efficiency of surrogate construction found in dimension-reduction methods such as PCGP (Higdon et al. 2008).
+
+
+5.3 Additional Comparisons of PCGPwM and colGP at Higher Output Dimension
+
+
+The predictive performance of colGP is laudible but it may be slow to construct at higher output dimensions. To further compare PCGPwM and colGP in terms of computational cost, we have conducted an additional experiment. We have increased the output dimension to m = 200 and focused on the performance at larger and 2500 with the borehole function. A maximum of 4 hr is permitted for each surrogate construction. Table 1 reports the respective construction time, RMSE, 90% coverage, and 90% width. PCGPwM achieves a higher RMSE than colGP, but maintains the right coverage with a narrower width. At n = 2500, the construction time of colGP exceeds the allowed time limit with higher dimensions and the computation is aborted. According to the time scaling, the construction time would have taken colGP an estimated 18 hr.
+
+
+
+6 Case Study: Calibrating the Fayans Energy Density Functional
+
+
+The section describes the case study mentioned in Section 2 that relies on the described surrogate method to conduct calibration. We review a surrogate-based calibration framework in Section 6.1. We present the results of applying the proposed method to the case of calibrating the Fayans EDF in Section 6.2.
+
+
+
+
+
+6.1 Bayesian Calibration with a Surrogate
+
+
+Suppose is a set of observations from the physical system that the simulation is representing. The differences between the observations and the simulation responses are assumed to follow a multivariate normal distribution with zero mean and covariance . This follows the canonical Kennedy and O’Hagan (2001) framework with the assumption that a systematic bias is negligible. The Kennedy and O’Hagan (2001) framework has generated much research interest; for examples, see Higdon et al. (2004), Williams et al. (2006), Bayarri et al. (2007), Higdon et al. (2008), and Brynjarsdóttir and O’Hagan (2014).
+
+Let π denote a probability density and be the conditional probability density of given . The purpose for calibration is to infer about the parameter . In the Bayesian setting, we are interested in the quantity , which is the posterior density of . By Bayes rule, given a prior density , we have where denotes equality up to a constant multiplier. Given the distribution of the differences, the expression is expanded to be
+
+
+
+
+
+where is the covariance matrix of the observation error. Often in a physical experiment, this covariance matrix is diagonal, as in the Fayans EDF model.
+
+Since missing data may be present, refers to the hypothetical output responses at a given parameter. When a surrogate, defined by and , constructed with data is used in place of the simulation model, which is a common strategy in the calibration literature, the posterior density is revised as
+
+
+
+(12)
+
+
+
+by considering the joint distribution of and being again multivariate normal. For a fixed simulation model sample (with missing data), this expression can be used to draw from the posterior using MCMC methods.
+
+
+6.2 Surrogate Construction and Calibration for the Fayans EDF
+
+
+In this section we apply the previously described surrogate methods for the calibration of the Fayans EDF model to provide uncertainty estimates for the parameter, using the knowledge of point minimizers obtained from the previous study. The first method is the proposed PCGPwM method. The second uses the simplistic imputation approach with PCGP-kNN. The third uses the colGP method, and the last method is simply to only use data rows with complete data. GP-OM discussed in the preceding section is not usable in this setting due to the data size causing it to be computationally infeasible: we estimate that the surrogate construction alone would take more than 30 days, before any calibration can be performed. The EMGP method is not applicable either, due to its computational instability. In the original paper by Hung, Joseph, and Melkote (2015), an isotropic correlation function is used for the categorical variable, which has two levels. In the Fayans EDF model, the categorical variable has nine levels. To adopt the EMGP method, the correlation is chosen to be 1 if the categorical variable is the same, and 0 if not. However, the hyperparameter estimation for the EMGP consistently fails to converge for this application.
+
+We construct the surrogates using simulation outputs of 500 well-spaced parameters. All parameters reside close to a local minimizer of the loss from Bollapragada et al. (2021). The parameter space is previously scaled to a unit hypercube such that the dimensions are comparable. To recover the unscaled parameter the centroid of the unscaled hypercube and the scale for each dimension are provided in Table 7 in the supplementary material (Chan, Plumlee, and Wild 2023), which reproduces Table 5 of Bollapragada et al. (2021).
+
+The simulation outputs are partially observed, where approximately 10% of the 99,000 responses are missing. Figure 1, as seen in the introduction, shows the missing value pattern in the sampled outputs arranged by increasing number of failures in parameters. Only 141 rows have complete data.
+
+To calibrate the Fayans EDF, the constructed surrogates are then supplied to the calibrator module in surmise. The chosen prior is the distribution over each dimension of the scaled parameter, representing the stability region studied in Bollapragada et al. (2021). The choice reflects the understanding that the parameters closer to the centroid of the scaled hypercube are more plausible. The prior density outside the scaled hypercube is zero, which reflects the boundary of stability region defined by the lower and upper bounds. The prior is then
+
+
+
+
+
+where θl is the lth element of . With specified, the posterior is then given by (12). Samples are drawn from the posterior by the Langevin Monte Carlo method (Roberts and Stramer 2002), an MCMC method that uses gradient information at the current iterate. In addition, the sampling method is strengthened by incorporating parallel tempering (Geyer 1991; Gelman et al. 2013). The method is implemented in the utility module of surmise under the name PTLMC. We note that the closed-form nature of our surrogate allows for easy deployment of gradient-based approaches.
+
+To investigate the utility of the surrogate-based inference using these methods, we compare the posterior distributions. Since the considered parameter space is scaled around the centroid of the hypercube, we expect the posterior means to be close. This is verified in our computation that the posterior means estimated using all surrogate methods considered are found to be close to each other. We are then concerned with the precision of the posterior, the idea being that a more precise surrogate in this setting should lead to a narrower posterior on the parameters. This can be seen in expression (12), where a decrease to the surrogate covariance matrix yields a more concentrated posterior, given a fixed . The precision of the surrogate is measured by the widths of the intervals between the 5% and 95% quantiles (called the 90% width) for each parameter relative to the upper and lower bounds. Table 2 contains the 90% widths relatively scaled from all surrogates. The credible intervals from all the surrogates shrink compared with the 90% relative width, 0.730. PCGPwM results in the smallest intervals all but two of the model parameters. This constraining of plausible parameter region is attributed to the improved surrogate offering more precise predictions of simulation responses. The benefit for this case study is that the analysis using the proposed surrogate method provides the uncertainty estimates for the parameter of the Fayans EDF model in contrast to previous studies. We find that there are considerable differences in the resulting interval widths, with some parameters (e.g., and ) being estimated more precisely, and some parameters (e.g., and L) having smaller precision improvements. To more concretely understand the benefit, if we only use the complete output data to build our surrogate, the resulting posterior intervals would have been 6%–58% wider.
+
+
+Table 2 Posterior 90% widths relative to their respective ranges for the 13-dimensional parameter using different emulation techniques. (Table view) EDF parametersPCGPwMPCGP-kNNcolGPComplete dataPrior,
+
+0.355 0.500 0.546 0.491 0.730
+
+E / A 0.345 0.463 0.389 0.607 0.730
+
+K 0.455 0.493 0.361 0.643 0.730
+
+J 0.303 0.557 0.535 0.497 0.730
+
+L 0.437 0.484 0.393 0.576 0.730
+
+0.370 0.462 0.401 0.587 0.730
+
+0.421 0.569 0.654 0.450 0.730
+
+0.337 0.405 0.351 0.637 0.730
+
+κ 0.339 0.479 0.461 0.614 0.730
+
+0.198 0.319 0.273 0.421 0.730
+
+0.125 0.345 0.246 0.300 0.730
+
+0.386 0.530 0.347 0.536 0.730
+
+0.128 0.367 0.215 0.254 0.730
+
+
+
+The narrowest interval for each parameter is shown in bold.
+
+
+
+
+
+7 Conclusion
+
+
+This article details a new surrogate construction method developed to handle missing data. The construction relies on an imputation of the missing data and a covariance adjustment to account for the added uncertainty due to imputation. This method is efficient and adds minimal burden on computations. The surrogate construction is effective in ignoring entirely missing data in a multivariate output context. Furthermore, it retains the efficiency of modern approaches to building surrogates of high-dimensional output data.
+
+It is expected that as nascent models are used in large computing environments, partially observed output data will become more prevalent. For example, Lin et al. (2021) conduct their inference by constructing a missingness classifier in addition to a surrogate using available simulation data. When missingness is important to inference, the method proposed in this article could be used in to help with the surrogate to prevent tractability issues.
+
+
+
+
+
+Acknowledgments
+
+
+We thank the editor, AE, two anonymous referees, Earl Lawrence and Kelly Moran for their valuable feedback for improving this article’s exposition. We are grateful to Jared O’Neal and Paul-Gerhard Reinhard for developing the Fayans EDF model employed here. We gratefully acknowledge the computing resources provided on Bebop, a high-performance computing cluster operated by the Laboratory Computing Resource Center at Argonne National Laboratory. This research was supported in part through the computational resources and staff contributions provided for the Quest high-performance computing facility at Northwestern University, which is jointly supported by the Office of the Provost, the Office for Research, and Northwestern University Information Technology.
+
+
+Disclosure Statement
+
+
+The authors report there are no competing interests to declare.
+
+
+Funding
+
+
+This material is based upon work supported by NSF grants OAC 2004601, DMS 1953111, 1952897. This material is based upon work supported by the U.S. Department of Energy, Office of Science, Office of Advanced Scientific Computing Research SciDAC and applied mathematics programs under contract DE-AC02-05CH11231, and by NSF grants OAC 2004601 and DMS 1952897.
+
+
+Supplementary Materials
+
+
+The supplementary materials contain (i) proofs for Theorems 1 and 2, (ii) technical details for computation, (iii) descriptions of test functions, (iv) full results from the numerical experiments, (v) the original scaling of the Fayans EDF parameter space, and (vi) the code and data for the Fayans EDF case study.
+
+
+References
+
+
+Altman, N. S. (1992), “An Introduction to Kernel and Nearest-Neighbor Nonparametric Regression,” The American Statistician, 46, 175–185. Crossref. ISI.
+
+
+
+Baker, E., Barbillon, P., Fadikar, A., Gramacy, R. B., Herbei, R., Higdon, D., Huang, J., Johnson, L. R., Ma, P., Mondal, A., et al. (2022), “Analyzing Stochastic Computer Models: A Review with Opportunities,” Statistical Science, 37, 64–89. Crossref. ISI.
+
+
+
+Bayarri, M. J., Berger, J. O., Kennedy, M. C., Kottas, A., Paulo, R., Sacks, J., Cafeo, J. A., Lin, C.-H., and Tu, J. (2009), “Predicting Vehicle Crashworthiness: Validation of Computer Models for Functional and Hierarchical Data,” Journal of the American Statistical Association, 104, 929–943. Crossref. ISI.
+
+
+
+Bayarri, M. J., Walsh, D., Berger, J. O., Cafeo, J., Garcia-Donato, G., Liu, F., Palomo, J., Parthasarathy, R. J., Paulo, R., and Sacks, J. (2007), “Computer Model Validation with Functional Output,” The Annals of Statistics, 35, 1874–1906. Crossref. ISI.
+
+
+
+Bollapragada, R., Menickelly, M., Nazarewicz, W., O’Neal, J., Reinhard, P.-G., and Wild, S. M. (2021), “Optimization and Supervised Machine Learning Methods for Fitting Numerical Physics Models without Derivatives,” Journal of Physics G: Nuclear and Particle Physics, 48, 024001. Crossref. ISI.
+
+
+
+Brynjarsdóttir, J. and O’Hagan, A. (2014), “Learning about Physical Parameters: The Importance of Model Discrepancy,” Inverse Problems, 30, 114007. Crossref. ISI.
+
+
+
+Chan, M. Y., Plumlee, M., and Wild, S. M. (2023), “Crossref to ‘Constructing a Simulation Surrogate with Partially-Observed Output’,”.
+
+
+
+Chang, W., Haran, M., Olson, R., and Keller, K. (2014), “Fast Dimension-Reduced Climate Model Calibration and the Effect of Data Aggregation,” The Annals of Applied Statistics, 8, 649–673. Crossref. ISI.
+
+
+
+Chevalier, C., and Ginsbourger, D. (2013), “Fast Computation of the Multi-Points Expected Improvement with Applications in Batch Selection,” in Lecture Notes in Computer Science, eds. G. Nicosia, and P. Pardalos, pp. 59–69, Heidelberg: Springer Berlin.
+
+
+
+Conti, S., and O’Hagan, A. (2010), “Bayesian Emulation of Complex Multi-Output and Dynamic Computer Models,” Journal of Statistical Planning and Inference, 140, 640–651. Crossref. ISI.
+
+
+
+Dobaczewski, J., Nazarewicz, W., and Reinhard, P.-G. (2014), “Error Estimates of Theoretical Models: A Guide,” Journal of Physics G: Nuclear and Particle Physics, 41, 074001. Crossref. ISI.
+
+
+
+Dobaczewski, J., and Olbratowski, P. (2005), “Solution of the Skyrme-Hartree-Fock-Bogolyubov Equations in the Cartesian Deformed Harmonic-Oscillator Basis. (V) HFODD (v2.08k),” Computer Physics Communications, 167, 214–216. Crossref. ISI.
+
+
+
+Fayans, S. (1998), “Towards a Universal Nuclear Density Functional,” Journal of Experimental and Theoretical Physics Letters, 68, 169–174. Crossref. ISI.
+
+
+
+Fayans, S., Tolokonnikov, S., Trykov, E., and Zawischa, D. (2000), “Nuclear Isotope Shifts Within the Local Energy-Density Functional Approach,” Nuclear Physics A, 676, 49–119. Crossref. ISI.
+
+
+
+Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari, A., and Rubin, D. B. (2013), Bayesian Data Analysis, Boca Raton: CRC Press. Crossref.
+
+
+
+Geyer, C. J. (1991), “Markov Chain Monte Carlo Maximum Likelihood,” in Computing Science and Statistics, Proceedings of the 23rd Symposium on the Interface, pp. 156–163.
+
+
+
+GPy (since 2012), “GPy: A Gaussian process framework in python,” available at http://github.com/SheffieldML/GPy.
+
+
+
+Gramacy, R. B. (2020), Surrogates: Gaussian Process Modeling, Design, and Optimization for the Applied Sciences, New York: CRC Press. Crossref.
+
+
+
+Gramacy, R. B., Bingham, D., Holloway, J. P., Grosskopf, M. J., Kuranz, C. C., Rutter, E., Trantham, M., and Drake, R. P. (2015), “Calibrating a Large Computer Experiment Simulating Radiative Shock Hydrodynamics,” The Annals of Applied Statistics, 9, 1141–1168. Crossref. ISI.
+
+
+
+Gu, M., and Berger, J. O. (2016), “Parallel Partial Gaussian Process Emulation for Computer Models with Massive Output,” The Annals of Applied Statistics, 10, 1317–1347. Crossref. ISI.
+
+
+
+Gu, M., and Xu, Y. (2020), “Fast Nonseparable Gaussian Stochastic Process with Application to Methylation Level Interpolation,” Journal of Computational and Graphical Statistics, 29, 250–260. Crossref. ISI.
+
+
+
+Guillas, S., Sarri, A., Day, S., Liu, X., and Dias, F. (2018), “Functional Emulation of High Resolution Tsunami Modelling over Cascadia,” Annals of Applied Statistics, 12, 2023–2053. Crossref. ISI.
+
+
+
+Handcock, M. S., and Stein, M. L. (1993), “A Bayesian Analysis of Kriging,” Technometrics, 35, 403–410. Crossref. ISI.
+
+
+
+Higdon, D., Gattiker, J., Williams, B., and Rightley, M. (2008), “Computer Model Calibration Using High-Dimensional Output,” Journal of the American Statistical Association, 103, 570–583. Crossref. ISI.
+
+
+
+Higdon, D., Kennedy, M., Cavendish, J. C., Cafeo, J. A., and Ryne, R. D. (2004), “Combining Field Data and Computer Simulations for Calibration and Pediction,” SIAM Journal on Scientific Computing, 26, 448–466. Crossref. ISI.
+
+
+
+Higdon, D., McDonnell, J. D., Schunck, N., Sarich, J., and Wild, S. M. (2015), “A Bayesian Approach for Parameter Estimation and Prediction Using a Computationally Intensive Model,” Journal of Physics G: Nuclear and Particle Physics, 42, 034009. Crossref. ISI.
+
+
+
+Huang, J., Gramacy, R. B., Binois, M., and Libraschi, M. (2020), “On-Site Surrogates for Large-Scale Calibration,” Applied Stochastic Models in Business and Industry, 36, 283–304. Crossref. ISI.
+
+
+
+Hung, Y., Joseph, V. R., and Melkote, S. N. (2015), “Analysis of Computer Experiments with Functional Response,” Technometrics, 57, 35–44. Crossref. ISI.
+
+
+
+Joseph, V. R., Gul, E., and Ba, S. (2015), “Maximum Projection Designs for Computer Experiments,” Biometrika, 102, 371–380. Crossref. ISI.
+
+
+
+Kennedy, M. C., and O’Hagan, A. (2001), “Bayesian Calibration of Computer Models,” Journal of the Royal Statistical Society, Series B, 63, 425–464. Crossref. ISI.
+
+
+
+Kortelainen, M., Lesinski, T., Moré, J. J., Nazarewicz, W., Sarich, J., Schunck, N., Stoitsov, M. V., and Wild, S. M. (2010), “Nuclear Energy Density Optimization,” Physical Review C, 82, 024313. Crossref. ISI.
+
+
+
+Kortelainen, M., McDonnell, J. D., Nazarewicz, W., Olsen, E., Reinhard, P.-G., Sarich, J., Schunck, N., Wild, S. M., Davesne, D., Erler, J., and Pastore, A. (2014), “Nuclear Energy Density Optimization: Shell Structure,” Physical Review C, 89, 054314. Crossref. ISI.
+
+
+
+Kortelainen, M., McDonnell, J. D., Nazarewicz, W., Reinhard, P.-G., Sarich, J., Schunck, N., Stoitsov, M. V., and Wild, S. M. (2012), “Nuclear Energy Density Optimization: Large Deformations,” Physical Review C, 85, 024304. Crossref. ISI.
+
+
+
+Kyprioti, A. P., Taflanidis, A. A., Plumlee, M., Asher, T. G., Spiller, E., Luettich, R. A., Blanton, B., Kijewski-Correa, T. L., Kennedy, A., and Schmied, L. (2021), “Improvements in Storm Surge Surrogate Modeling for Synthetic Storm Parameterization, Node Condition Classification and Implementation to Small Size Databases,” Natural Hazards, 109, 1349–1386. Crossref. ISI.
+
+
+
+Lawrence, E., Heitmann, K., Kwan, J., Upadhye, A., Bingham, D., Habib, S., Higdon, D., Pope, A., Finkel, H., and Frontiere, N. (2017), “The Mira-Titan Universe. II. Matter Power Spectrum Emulation,” The Astrophysical Journal, 847, 50. Crossref. ISI.
+
+
+
+Lin, L., Bingham, D., Broekgaarden, F., and Mandel, I. (2021), “Uncertainty Quantification of a Computer Model for Binary Black Hole Formation,” The Annals of Applied Statistics, 15, 1604–1627. Crossref. ISI.
+
+
+
+Ma, P., Mondal, A., Konomi, B. A., Hobbs, J., Song, J. J., and Kang, E. L. (2022), “Computer Model Emulation with High-Dimensional Functional Output in Large-Scale Observing System Uncertainty Experiments,” Technometrics, 64, 65–79. Crossref. ISI.
+
+
+
+Mak, S., and Joseph, V. R. (2018), “Support Points,” The Annals of Statistics, 46, 2562–2592. Crossref. ISI.
+
+
+
+Marque-Pucheu, S., Perrin, G., and Garnier, J. (2020), “An Efficient Dimension Reduction for the Gaussian Process Emulation of Two Nested Codes with Functional Outputs,” Computational Statistics, 35, 1059–1099. Crossref. ISI.
+
+
+
+McDonnell, J., Schunck, N., Higdon, D., Sarich, J., Wild, S., and Nazarewicz, W. (2015), “Uncertainty Quantification for Nuclear Density Functional Theory and Information Content of New Measurements,” Physical Review Letters, 114, 122501. Crossref. PubMed. ISI.
+
+
+
+McKay, M., Beckman, R., and Conover, W. (1979), “A Comparison of Three Methods for Selecting Values of Input Variables in the Analysis of Output from a Computer Code,” Technometrics, 21, 239–245. Crossref. ISI.
+
+
+
+Pedregosa, F., Varoquaux, G., Gramfort, A., Michel, V., Thirion, B., Grisel, O., Blondel, M., Prettenhofer, P., Weiss, R., Dubourg, V., Vanderplas, J., Passos, A., Cournapeau, D., Brucher, M., Perrot, M., and Duchesnay, E. (2011), “Scikit-learn: Machine Learning in Python,” Journal of Machine Learning Research, 12, 2825–2830. ISI.
+
+
+
+Phillips, D. R., Furnstahl, R. J., Heinz, U., Maiti, T., Nazarewicz, W., Nunes, F. M., Plumlee, M., Pratola, M. T., Pratt, S., Viens, F. G., and Wild, S. M. (2021), “Get on the BAND Wagon: A Bayesian Framework for Quantifying Model Uncertainties in Nuclear Dynamics,” Journal of Physics G: Nuclear and Particle Physics, 48, 072001. Crossref. ISI.
+
+
+
+Plumlee, M. (2017), “Bayesian Calibration of Inexact Computer Models,” Journal of the American Statistical Association, 112, 1274–1285. Crossref. ISI.
+
+
+
+Plumlee, M., Asher, T. G., Chang, W., and Bilskie, M. V. (2021a), “High-Fidelity Hurricane Surge Forecasting Using Emulation and Sequential Experiments,” Annals of Applied Statistics, 15, 460–480. Crossref. ISI.
+
+
+
+Plumlee, M., Sürer, O., and Wild, S. M. (2021b), Surmise Users Manual.
+
+
+
+Reinhard, P.-G., and Nazarewicz, W. (2017), “Toward a Global Description of Nuclear Charge Radii: Exploring the Fayans Energy Density Functional,” Physical Review C, 95, 064328. Crossref. ISI.
+
+
+
+Roberts, G. O., and Stramer, O. (2002), “Langevin Diffusions and Metropolis-Hastings Algorithms,” Methodology and Computing in Applied Probability, 4, 337–357. Crossref.
+
+
+
+Rougier, J. (2008), “Efficient Emulators for Multivariate Deterministic Functions,” Journal of Computational and Graphical Statistics, 17, 827–843. Crossref. ISI.
+
+
+
+Roweis, S. (1997), “EM Algorithms for PCA and SPCA,” in Proceedings of the 10th International Conference on Neural Information Processing Systems, NeurIPS’97, pp. 626–632, MIT Press.
+
+
+
+Salter, J. M., Williamson, D. B., Scinocca, J., and Kharin, V. (2019), “Uncertainty Quantification for Computer Models with Spatial Output Using Calibration-Optimal Bases,” Journal of the American Statistical Association, 114, 1800–1814. Crossref. ISI.
+
+
+
+Santner, T. J., Williams, B. J., and Notz, W. I. (2018), The Design and Analysis of Computer Experiments, New York: Springer. Crossref.
+
+
+
+Tipping, M. E. (2001), “Sparse Bayesian Learning and the Relevance Vector Machine,” Journal of Machine Learning Research, 1, 211–244. Crossref. ISI.
+
+
+
+Tipping, M. E., and Bishop, C. M. (1999), “Probabilistic Principal Component Analysis,” Journal of the Royal Statistical Society, Series B, 61, 611–622. Crossref. ISI.
+
+
+
+Tuo, R., and Wu, C. F. J. (2015), “Efficient Calibration for Imperfect Computer Models,” The Annals of Statistics, 43, 2331–2352. Crossref. ISI.
+
+
+
+Venkatramanan, S., Sadilek, A., Fadikar, A., Barrett, C. L., Biggerstaff, M., Chen, J., Dotiwalla, X., Eastham, P., Gipson, B., Higdon, D., Kucuktunc, O., Lieber, A., Lewis, B. L., Reynolds, Z., Vullikanti, A. K., Wang, L., and Marathe, M. (2021), “Forecasting Influenza Activity Using Machine-Learned Mobility Map,” Nature Communications, 12, 726. Crossref. PubMed. ISI.
+
+
+
+Williams, B., Higdon, D., Gattiker, J., Moore, L., McKay, M., Keller-McNulty, S., et al. (2006), “Combining Experimental Data and Computer Simulations, with an Application to Flyer Plate Experiments,” Bayesian Analysis, 1, 765–792. Crossref. ISI.
+
+
+
+Yu, Y., and Bulgac, A. (2003), “Energy Density Functional Approach to Superfluid Nuclei,” Physical Review Letters, 90, 222501. Crossref. PubMed. ISI.
+
+
+
+
+
+Sections
+
+
+Abstract
+
+1 Introduction
+
+2 Fayans Energy Density Functional
+
+3 High-Dimensional Surrogates3.1 Setting and Notations
+
+3.2 Gaussian Process Surrogates
+
+
+
+
+
+4 Fast Surrogates with Missing Data4.1 Desired Surrogate Properties
+
+4.2 Gaussian Process-based Imputation
+
+4.3 Covariance Adjustment
+
+4.4 Properties of the Proposed Surrogate
+
+4.5 Estimation of Hyperparameters in Surrogate Construction
+
+4.6 Rationale for the Extra Term
+
+
+
+
+
+5 Numerical Experiments5.1 Setup of Numerical Experiments
+
+5.2 Results of Comparison Experiments
+
+5.3 Additional Comparisons of PCGPwM and colGP at Higher Output Dimension
+
+
+
+
+
+6 Case Study: Calibrating the Fayans Energy Density Functional6.1 Bayesian Calibration with a Surrogate
+
+6.2 Surrogate Construction and Calibration for the Fayans EDF
+
+
+
+
+
+7 Conclusion
+
+Acknowledgments
+
+Disclosure Statement
+
+Funding
+
+Supplementary Materials
+
+References
+
+
+
+
+
+Guide
+
+
+List of Sections
+
+List of Illustrations
+
+Frontmatter
+
+Abstract
+
+Keywords
+
+Bodymatter
+
+Backmatter
+
+Acknowledgments
+
+References
+
+
+
+
+
+List of Illustrations
+
+
+Fig. 1
+
+Fig. 2
+
+Fig. 3
+
+
+
+
+
+Fig. 1 Illustration of partially observed output in our case study (Section 6). Each horizontal line (1–500) is a length 198 simulation output. A dark patch indicates where a response is missing. The horizontal lines are sorted by number of missing values in the output.
+
+
+
+
+
+Fig. 2 Illustrations of the effect of hyperparameter α in the variance term Except for α = 0, vik approaches infinity as wik approaches 1.
+
+
+
+
+
+Fig. 3 Comparison (log-log scale) of prediction accuracy of surrogate methods for (MNAR, 5%) scenario.
+
+
+
+
+
+Table 1 Construction times (in seconds) and predictive accuracies of PCGPwM and colGP at output dimension m = 200. Construction time (s)
+
+RMSE ()
+
+90% coverage
+
+90% width
+
+
+
+nPCGPwMcolGPPCGPwMcolGPPCGPwMcolGPPCGPwMcolGP
+
+1000 640 4225 3.9 2.5 0.912 0.962 0.764 0.920
+
+2500 9680 – 0.62 – 0.981 – 0.571 –
+
+
+
+
+
+Table 2 Posterior 90% widths relative to their respective ranges for the 13-dimensional parameter using different emulation techniques.EDF parametersPCGPwMPCGP-kNNcolGPComplete dataPrior,
+
+0.355 0.500 0.546 0.491 0.730
+
+E / A 0.345 0.463 0.389 0.607 0.730
+
+K 0.455 0.493 0.361 0.643 0.730
+
+J 0.303 0.557 0.535 0.497 0.730
+
+L 0.437 0.484 0.393 0.576 0.730
+
+0.370 0.462 0.401 0.587 0.730
+
+0.421 0.569 0.654 0.450 0.730
+
+0.337 0.405 0.351 0.637 0.730
+
+κ 0.339 0.479 0.461 0.614 0.730
+
+0.198 0.319 0.273 0.421 0.730
+
+0.125 0.345 0.246 0.300 0.730
+
+0.386 0.530 0.347 0.536 0.730
+
+0.128 0.367 0.215 0.254 0.730
+
+
+
+The narrowest interval for each parameter is shown in bold.
+
+
+
+
+

@@ -19,6 +19,10 @@ parts:
   - file: notes/05-data-modeling
   - file: examples/ex-electronic-medical-record
   - file: notes/06-intro-to-nosql
+  - file: notes/07-cassandra
+- caption: Distributed (cloud) computing
+  chapters:
+  - file: notes/08-hadoop-spark
 - caption: Appendix
   chapters:
   - file: notes/0a-jupyter-ec2
