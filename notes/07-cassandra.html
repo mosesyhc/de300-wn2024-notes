@@ -67,7 +67,7 @@ const thebe_selector_output = ".output, .cell_output"
     <script>DOCUMENTATION_OPTIONS.pagename = 'notes/07-cassandra';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Setting up EC2 instance for jupyter notebook" href="0a-jupyter-ec2.html" />
+    <link rel="next" title="Distributed (cloud) computing" href="08-hadoop-spark.html" />
     <link rel="prev" title="Introduction to NoSQL databases" href="06-intro-to-nosql.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -183,6 +183,10 @@ const thebe_selector_output = ".output, .cell_output"
 <li class="toctree-l1"><a class="reference internal" href="../examples/ex-electronic-medical-record.html">(EX) Electronic medical record</a></li>
 <li class="toctree-l1"><a class="reference internal" href="06-intro-to-nosql.html">Introduction to NoSQL databases</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Wide-column database system (Apache Cassandra)</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Distributed (cloud) computing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="08-hadoop-spark.html">Distributed (cloud) computing</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Appendix</span></p>
 <ul class="nav bd-sidenav">
@@ -403,7 +407,7 @@ document.write(`
 <figure class="align-default" id="token-ring">
 <a class="reference internal image-reference" href="../_images/token_ring.png"><img alt="../_images/token_ring.png" src="../_images/token_ring.png" style="width: 70%;" /></a>
 <figcaption>
-<p><span class="caption-number">Fig. 9 </span><span class="caption-text">Token ring (Fig 6.2 from <span id="id1">Carpenter and Hewitt [<a class="reference internal" href="../99-references.html#id12" title="Jeff Carpenter and Eben Hewitt. Cassandra: The Definitive Guide,(Revised). &quot; O'Reilly Media, Inc.&quot;, 2022.">2022</a>]</span>).</span><a class="headerlink" href="#token-ring" title="Permalink to this image">#</a></p>
+<p><span class="caption-number">Fig. 9 </span><span class="caption-text">Token ring (Fig 6.2 from <span id="id1">Carpenter and Hewitt [<a class="reference internal" href="#id14" title="Jeff Carpenter and Eben Hewitt. Cassandra: The Definitive Guide,(Revised). &quot; O'Reilly Media, Inc.&quot;, 2022.">2022</a>]</span>).</span><a class="headerlink" href="#token-ring" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
 </section>
@@ -552,7 +556,7 @@ Cassandra generally runs an <em>eventually consistent</em> model.</p>
 <li><p>When the initiator receives the <em>ack</em> message, it sends a <code class="docutils literal notranslate"><span class="pre">GossipDigestAck2</span></code> message to complete the round of gossip.</p></li>
 <li><p>If there is no response, the initiator <em>convicts</em> the friend by marking it as dead in its local list and logging that fact.</p></li>
 </ol>
-<p>When is a failure detected?  Cassandra implements <strong>the <span class="math notranslate nohighlight">\(\phi\)</span> accrual failure detector <span id="id2">[<a class="reference internal" href="../99-references.html#id13" title="Naohiro Hayashibara, Xavier Defago, Rami Yared, and Takuya Katayama. The phi accrual failure detector. In Proceedings of the 23rd IEEE International Symposium on Reliable Distributed Systems, 2004., 66–78. IEEE, 2004.">Hayashibara <em>et al.</em>, 2004</a>]</span></strong>.</p>
+<p>When is a failure detected?  Cassandra implements <strong>the <span class="math notranslate nohighlight">\(\phi\)</span> accrual failure detector <span id="id2">[<a class="reference internal" href="#id15" title="Naohiro Hayashibara, Xavier Defago, Rami Yared, and Takuya Katayama. The phi accrual failure detector. In Proceedings of the 23rd IEEE International Symposium on Reliable Distributed Systems, 2004., 66–78. IEEE, 2004.">Hayashibara <em>et al.</em>, 2004</a>]</span></strong>.</p>
 <ul class="simple">
 <li><p>A <em>suspicion</em> level is maintained by the failure monitoring system.</p></li>
 <li><p>Each node has a <em>Phi</em> suspicion level attached.</p></li>
@@ -571,6 +575,16 @@ Cassandra generally runs an <em>eventually consistent</em> model.</p>
 </ul>
 </li>
 </ul>
+<div class="docutils container" id="id3">
+<dl class="citation">
+<dt class="label" id="id14"><span class="brackets"><a class="fn-backref" href="#id1">CH22</a></span></dt>
+<dd><p>Jeff Carpenter and Eben Hewitt. <em>Cassandra: The Definitive Guide,(Revised)</em>. &quot; O'Reilly Media, Inc.&quot;, 2022.</p>
+</dd>
+<dt class="label" id="id15"><span class="brackets"><a class="fn-backref" href="#id2">HDYK04</a></span></dt>
+<dd><p>Naohiro Hayashibara, Xavier Defago, Rami Yared, and Takuya Katayama. The phi accrual failure detector. In <em>Proceedings of the 23rd IEEE International Symposium on Reliable Distributed Systems, 2004.</em>, 66–78. IEEE, 2004.</p>
+</dd>
+</dl>
+</div>
 </section>
 </section>
 </section>
@@ -615,11 +629,11 @@ Cassandra generally runs an <em>eventually consistent</em> model.</p>
       </div>
     </a>
     <a class="right-next"
-       href="0a-jupyter-ec2.html"
+       href="08-hadoop-spark.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Setting up EC2 instance for jupyter notebook</p>
+        <p class="prev-next-title">Distributed (cloud) computing</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
