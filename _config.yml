@@ -8,7 +8,8 @@ author: Moses Y.-H. Chan
 # Force re-execution of notebooks on each build.
 # See https://jupyterbook.org/content/execute.html
 execute:
-  execute_notebooks: force
+  execute_notebooks: auto
+  exclude_patterns: ['notes/0b-access-keyspaces'] 
 
 # Define the name of the latex output file for PDF builds
 latex:
