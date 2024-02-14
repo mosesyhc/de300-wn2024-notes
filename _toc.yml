@@ -23,6 +23,7 @@ parts:
 - caption: Distributed (cloud) computing
   chapters:
   - file: notes/08-hadoop-spark
+  - file: examples/ex-word-count-schema
 - caption: Appendix
   chapters:
   - file: notes/0a-jupyter-ec2
