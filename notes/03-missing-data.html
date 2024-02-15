@@ -187,6 +187,8 @@ const thebe_selector_output = ".output, .cell_output"
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Distributed (cloud) computing</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="08-hadoop-spark.html">Distributed (cloud) computing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../examples/ex-word-count-schema.html">Word count example (in pictures)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="09-rdd.html">Resilient distributed datasets</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Appendix</span></p>
 <ul class="nav bd-sidenav">
@@ -602,6 +604,7 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># example with median, admitting only numeric columns</span>
+<span class="n">median_imputer</span> <span class="o">=</span> <span class="n">SimpleImputer</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s1">&#39;median&#39;</span><span class="p">)</span>
 <span class="n">titanic_median</span> <span class="o">=</span> <span class="n">titanic</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 <span class="n">titanic_median</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">median_imputer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">titanic_median</span><span class="p">[[</span><span class="s1">&#39;age&#39;</span><span class="p">]])</span>
 <span class="c1"># another option</span>
@@ -615,19 +618,10 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span> <span class="n">line</span> <span class="mi">3</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="c1"># example with median, admitting only numeric columns</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">titanic_median</span> <span class="o">=</span> <span class="n">titanic</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-<span class="ne">----&gt; </span><span class="mi">3</span> <span class="n">titanic_median</span><span class="p">[</span><span class="s1">&#39;age&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">median_imputer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">titanic_median</span><span class="p">[[</span><span class="s1">&#39;age&#39;</span><span class="p">]])</span>
-<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="c1"># another option</span>
-<span class="g g-Whitespace">      </span><span class="mi">5</span> <span class="c1"># titanic_median[&#39;age&#39;] = titanic_median[&#39;age&#39;].fillna(titanic_median[&#39;age&#39;].median())</span>
-<span class="g g-Whitespace">      </span><span class="mi">7</span> <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-
-<span class="ne">NameError</span>: name &#39;median_imputer&#39; is not defined
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x2623a70ad10&gt;
 </pre></div>
 </div>
+<img alt="../_images/e1223e049dc2d0cf28890a07893129a2b7bd6988de39c7b1fbd76f61388f85cd.png" src="../_images/e1223e049dc2d0cf28890a07893129a2b7bd6988de39c7b1fbd76f61388f85cd.png" />
 </div>
 </div>
 </section>
@@ -689,7 +683,7 @@ document.write(`
        Data Samples: 891
        Data Columns: 6
   Imputed Variables: 1
-save_all_iterations: True&gt;
+save_all_iterations: False&gt;
 </pre></div>
 </div>
 </div>
@@ -751,7 +745,7 @@ save_all_iterations: True&gt;
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x1ce080d7010&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.legend.Legend at 0x2624ab18d50&gt;
 </pre></div>
 </div>
 <img alt="../_images/b685a4c8cd4158b97c2f416e9e26085b810f0c26fd1371d97d1a4a9200bc3f57.png" src="../_images/b685a4c8cd4158b97c2f416e9e26085b810f0c26fd1371d97d1a4a9200bc3f57.png" />
