@@ -24,6 +24,8 @@ parts:
   chapters:
   - file: notes/08-hadoop-spark
   - file: examples/ex-word-count-schema
+  - file: notes/09-rdd
+  - file: notes/10-examples-mr
 - caption: Appendix
   chapters:
   - file: notes/0a-jupyter-ec2
